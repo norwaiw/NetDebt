@@ -1,0 +1,77 @@
+"debts" = "债务";
+"statistics" = "统计";
+"settings" = "设置";
+
+"debt_tracker" = "债务跟踪";
+"add_debt" = "添加债务";
+
+"theme" = "主题";
+"language" = "语言";
+"appearance" = "外观";
+"general" = "常规";
+
+"owed_to_me" = "别人欠我的";
+"i_owe" = "我欠别人的";
+"net_balance" = "净余额";
+"overdue_debts" = "逾期债务";
+"quick_stats" = "快速统计";
+"total_debts" = "总债务";
+"unpaid" = "未支付";
+"paid" = "已支付";
+
+"all" = "全部";
+"owed_to_me_filter" = "别人欠我的";
+"i_owe_filter" = "我欠别人的";
+"unpaid_filter" = "未支付";
+"paid_filter" = "已支付";
+"overdue_filter" = "逾期";
+
+"date_created" = "创建日期";
+"amount" = "金额";
+"due_date" = "到期日";
+"title" = "标题";
+
+"filter" = "筛选";
+"sort" = "排序";
+"search_debts" = "搜索债务...";
+"from" = "来自";
+"to" = "到";
+"overdue" = "(逾期)";
+"days_overdue" = "天逾期";
+
+"no_debts_found" = "未找到债务。\n点击 + 添加第一笔债务。";
+"no_one_owes_you" = "没有人欠你钱。\n恭喜！";
+"you_dont_owe" = "你不欠任何人钱。\n干得好！";
+"no_unpaid_debts" = "未找到未支付债务。";
+"no_paid_debts" = "未找到已支付债务。";
+"no_overdue_debts" = "没有逾期债务。\n一切进展顺利！";
+
+"type" = "类型";
+"someone_owes_me" = "有人欠我";
+"i_owe_someone" = "我欠他人";
+"people" = "人员";
+"who_owes_you" = "谁欠你？";
+"who_do_you_owe" = "你欠谁？";
+"your_name" = "你的名字";
+"set_due_date" = "设置到期日";
+"additional_details" = "附加信息";
+"interest_rate_percent" = "利率 (%)";
+"notes_optional" = "备注 (可选)";
+"debt_details" = "债务详情";
+"title_field" = "标题";
+"cancel" = "取消";
+"save" = "保存";
+"edit_debt" = "编辑债务";
+"edit" = "编辑";
+"creditor" = "债权人";
+"creditor_you" = "债权人 (你)";
+"debtor" = "债务人";
+"debtor_you" = "债务人 (你)";
+"dates" = "日期";
+"created" = "创建";
+"days_remaining" = "剩余天数";
+"mark_as_paid" = "标记为已支付";
+"delete_debt" = "删除债务";
+"delete_debt_title" = "删除债务";
+"delete_debt_message" = "确定要删除此债务吗？此操作无法撤销。";
+"notes" = "备注";

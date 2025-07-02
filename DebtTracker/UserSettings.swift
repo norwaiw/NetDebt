@@ -25,11 +25,23 @@ final class UserSettings: ObservableObject {
         func localizedName(for language: AppLanguage) -> String {
             switch self {
             case .light:
-                return language == .english ? "Light" : "Светлая"
+                switch language {
+                case .english: return "Light"
+                case .russian: return "Светлая"
+                case .chinese: return "浅色"
+                }
             case .dark:
-                return language == .english ? "Dark" : "Тёмная"
+                switch language {
+                case .english: return "Dark"
+                case .russian: return "Тёмная"
+                case .chinese: return "深色"
+                }
             case .system:
-                return language == .english ? "System" : "Системная"
+                switch language {
+                case .english: return "System"
+                case .russian: return "Системная"
+                case .chinese: return "系统"
+                }
             }
         }
     }
@@ -37,6 +49,7 @@ final class UserSettings: ObservableObject {
     enum AppLanguage: String, CaseIterable {
         case english = "en"
         case russian = "ru"
+        case chinese = "zh-Hans"
         
         var localizedName: String {
             switch self {
@@ -44,6 +57,8 @@ final class UserSettings: ObservableObject {
                 return "English"
             case .russian:
                 return "Русский"
+            case .chinese:
+                return "中文"
             }
         }
         
