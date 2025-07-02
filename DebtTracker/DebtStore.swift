@@ -13,16 +13,20 @@ class DebtStore: ObservableObject {
     func addDebt(_ debt: Debt) {
         debts.append(debt)
         saveDebts()
+        NotificationManager.shared.scheduleNotification(for: debt)
     }
     
     func updateDebt(_ debt: Debt) {
         if let index = debts.firstIndex(where: { $0.id == debt.id }) {
+            NotificationManager.shared.cancelNotification(for: debts[index])
             debts[index] = debt
             saveDebts()
+            NotificationManager.shared.scheduleNotification(for: debt)
         }
     }
     
     func deleteDebt(_ debt: Debt) {
+        NotificationManager.shared.cancelNotification(for: debt)
         debts.removeAll { $0.id == debt.id }
         saveDebts()
     }
@@ -31,6 +35,7 @@ class DebtStore: ObservableObject {
         if let index = debts.firstIndex(where: { $0.id == debt.id }) {
             debts[index].isPaid = true
             saveDebts()
+            NotificationManager.shared.cancelNotification(for: debts[index])
         }
     }
     
@@ -44,6 +49,10 @@ class DebtStore: ObservableObject {
         if let data = UserDefaults.standard.data(forKey: saveKey),
            let decoded = try? JSONDecoder().decode([Debt].self, from: data) {
             debts = decoded
+            // Ensure notifications are scheduled for existing debts.
+            for debt in debts {
+                NotificationManager.shared.scheduleNotification(for: debt)
+            }
         }
     }
     
