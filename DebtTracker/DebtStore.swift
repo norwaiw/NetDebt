@@ -39,6 +39,37 @@ class DebtStore: ObservableObject {
         }
     }
     
+    // New methods for partial payments
+    func addPartialPayment(to debt: Debt, amount: Double, note: String = "") {
+        if let index = debts.firstIndex(where: { $0.id == debt.id }) {
+            let payment = PartialPayment(amount: amount, date: Date(), note: note)
+            debts[index].partialPayments.append(payment)
+            
+            // Check if debt is fully paid
+            if debts[index].remainingAmount <= 0 {
+                debts[index].isPaid = true
+                NotificationManager.shared.cancelNotification(for: debts[index])
+            }
+            
+            saveDebts()
+        }
+    }
+    
+    func deletePartialPayment(from debt: Debt, paymentId: UUID) {
+        if let debtIndex = debts.firstIndex(where: { $0.id == debt.id }),
+           let paymentIndex = debts[debtIndex].partialPayments.firstIndex(where: { $0.id == paymentId }) {
+            debts[debtIndex].partialPayments.remove(at: paymentIndex)
+            
+            // Update paid status if needed
+            if debts[debtIndex].isPaid && debts[debtIndex].remainingAmount > 0 {
+                debts[debtIndex].isPaid = false
+                NotificationManager.shared.scheduleNotification(for: debts[debtIndex])
+            }
+            
+            saveDebts()
+        }
+    }
+    
     private func saveDebts() {
         if let encoded = try? JSONEncoder().encode(debts) {
             UserDefaults.standard.set(encoded, forKey: saveKey)
@@ -58,11 +89,11 @@ class DebtStore: ObservableObject {
     
     // Computed properties for statistics
     var totalOwedToMe: Double {
-        debts.filter { $0.isOwedToMe && !$0.isPaid }.reduce(0) { $0 + $1.amount }
+        debts.filter { $0.isOwedToMe && !$0.isPaid }.reduce(0) { $0 + $1.remainingAmount }
     }
     
     var totalIOwe: Double {
-        debts.filter { !$0.isOwedToMe && !$0.isPaid }.reduce(0) { $0 + $1.amount }
+        debts.filter { !$0.isOwedToMe && !$0.isPaid }.reduce(0) { $0 + $1.remainingAmount }
     }
     
     var overdueDebts: [Debt] {
