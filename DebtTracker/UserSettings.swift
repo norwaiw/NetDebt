@@ -5,6 +5,7 @@ import Foundation
 final class UserSettings: ObservableObject {
     @Published var selectedTheme: AppTheme = .system
     @Published var selectedLanguage: AppLanguage = .english
+    @Published var showTotalAmounts: Bool = true
     
     enum AppTheme: String, CaseIterable {
         case light = "light"
@@ -69,6 +70,7 @@ final class UserSettings: ObservableObject {
     
     private let themeKey = "selectedTheme"
     private let languageKey = "selectedLanguage"
+    private let showAmountsKey = "showTotalAmounts"
     
     init() {
         loadSettings()
@@ -84,11 +86,14 @@ final class UserSettings: ObservableObject {
            let language = AppLanguage(rawValue: languageString) {
             selectedLanguage = language
         }
+        
+        showTotalAmounts = UserDefaults.standard.object(forKey: showAmountsKey) as? Bool ?? true
     }
     
     func saveSettings() {
         UserDefaults.standard.set(selectedTheme.rawValue, forKey: themeKey)
         UserDefaults.standard.set(selectedLanguage.rawValue, forKey: languageKey)
+        UserDefaults.standard.set(showTotalAmounts, forKey: showAmountsKey)
     }
     
     func updateTheme(_ theme: AppTheme) {
@@ -98,6 +103,11 @@ final class UserSettings: ObservableObject {
     
     func updateLanguage(_ language: AppLanguage) {
         selectedLanguage = language
+        saveSettings()
+    }
+    
+    func updateShowTotalAmounts(_ show: Bool) {
+        showTotalAmounts = show
         saveSettings()
     }
 }

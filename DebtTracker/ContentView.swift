@@ -52,21 +52,24 @@ struct StatisticsView: View {
                             title: localizedString("owed_to_me"),
                             amount: debtStore.totalOwedToMe,
                             color: .green,
-                            icon: "arrow.down.circle.fill"
+                            icon: "arrow.down.circle.fill",
+                            isHidden: !userSettings.showTotalAmounts
                         )
                         
                         SummaryCard(
                             title: localizedString("i_owe"),
                             amount: debtStore.totalIOwe,
                             color: .red,
-                            icon: "arrow.up.circle.fill"
+                            icon: "arrow.up.circle.fill",
+                            isHidden: !userSettings.showTotalAmounts
                         )
                         
                         SummaryCard(
                             title: localizedString("net_balance"),
                             amount: debtStore.totalOwedToMe - debtStore.totalIOwe,
                             color: debtStore.totalOwedToMe >= debtStore.totalIOwe ? .green : .red,
-                            icon: "equal.circle.fill"
+                            icon: "equal.circle.fill",
+                            isHidden: !userSettings.showTotalAmounts
                         )
                     }
                     .padding(.horizontal)
@@ -123,8 +126,10 @@ struct SummaryCard: View {
     let amount: Double
     let color: Color
     let icon: String
+    let isHidden: Bool
     
     private var formattedAmount: String {
+        guard !isHidden else { return "••••" }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.locale = Locale.current

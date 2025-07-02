@@ -93,6 +93,24 @@ struct SettingsView: View {
                     Text(localizedString("general"))
                 }
                 
+                // Privacy Section
+                Section {
+                    Toggle(isOn: $userSettings.showTotalAmounts) {
+                        HStack {
+                            Image(systemName: userSettings.showTotalAmounts ? "eye" : "eye.slash")
+                                .foregroundColor(.purple)
+                                .frame(width: 24)
+                            Text(localizedString("show_total_amounts"))
+                                .font(.body)
+                        }
+                    }
+                    .onChange(of: userSettings.showTotalAmounts) { _ in
+                        userSettings.saveSettings()
+                    }
+                } header: {
+                    Text(localizedString("privacy"))
+                }
+                
                 // Theme Preview Section
                 Section {
                     VStack(spacing: 16) {
