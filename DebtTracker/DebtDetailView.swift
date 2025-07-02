@@ -132,7 +132,7 @@ struct DebtDetailView: View {
                             if debt.interestRate > 0 {
                                 DetailRow(
                                     title: "Interest Rate",
-                                    value: "\(debt.interestRate, specifier: "%.2f")%",
+                                    value: "\(String(format: "%.2f", debt.interestRate))%",
                                     icon: "percent"
                                 )
                             }
