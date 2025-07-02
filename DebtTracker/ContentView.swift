@@ -113,7 +113,7 @@ struct StatisticsView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle(localizedString("debt_tracker"))
+            .navigationTitle(localizedString("statistics"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
