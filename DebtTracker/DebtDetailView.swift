@@ -22,6 +22,11 @@ struct DebtDetailView: View {
     @State private var editNotes = ""
     @State private var editInterestRate = ""
     
+    // New states for partial payments
+    @State private var showingAddPayment = false
+    @State private var paymentAmount = ""
+    @State private var paymentNote = ""
+    
     private var isValidForm: Bool {
         !editTitle.trimmingCharacters(in: .whitespaces).isEmpty &&
         !editAmount.trimmingCharacters(in: .whitespaces).isEmpty &&
@@ -89,6 +94,89 @@ struct DebtDetailView: View {
                     }
                 }
                 .padding(.horizontal)
+                
+                // Payment Progress Section (New)
+                if !debt.isPaid && debt.amount > 0 {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text(localizedString("payment_progress"))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            
+                            Spacer()
+                            
+                            // Urgency indicator badge
+                            if debt.dueDate != nil {
+                                HStack(spacing: 4) {
+                                    Image(systemName: debt.urgencyLevel.systemImageName)
+                                        .font(.caption)
+                                    Text(urgencyText(for: debt.urgencyLevel))
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                }
+                                .foregroundColor(debt.urgencyLevel.color)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(debt.urgencyLevel.color.opacity(0.2))
+                                .cornerRadius(12)
+                            }
+                        }
+                        
+                        // Progress bar
+                        PaymentProgressView(debt: debt)
+                        
+                        // Partial payments list
+                        if debt.partialPayments.count > 0 {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(localizedString("partial_payments"))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                
+                                ForEach(debt.partialPayments.sorted(by: { $0.date > $1.date })) { payment in
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(payment.amount.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD")))
+                                                .font(.body)
+                                                .fontWeight(.medium)
+                                            Text(payment.date.formatted(date: .abbreviated, time: .omitted))
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                            if !payment.note.isEmpty {
+                                                Text(payment.note)
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            debtStore.deletePartialPayment(from: debt, paymentId: payment.id)
+                                        }) {
+                                            Image(systemName: "trash")
+                                                .font(.caption)
+                                                .foregroundColor(.red)
+                                        }
+                                    }
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                            }
+                        }
+                        
+                        // Add payment button
+                        Button(action: { showingAddPayment = true }) {
+                            HStack {
+                                Image(systemName: "plus.circle")
+                                Text(localizedString("add_payment"))
+                            }
+                            .font(.body)
+                            .foregroundColor(.blue)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
                 
                 // Dates
                 VStack(alignment: .leading, spacing: 16) {
@@ -211,6 +299,9 @@ struct DebtDetailView: View {
         } message: {
             Text(localizedString("delete_debt_message"))
         }
+        .sheet(isPresented: $showingAddPayment) {
+            addPaymentView
+        }
     }
     
     private var editingView: some View {
@@ -309,6 +400,82 @@ struct DebtDetailView: View {
         
         debtStore.updateDebt(updatedDebt)
         isEditing = false
+    }
+    
+    private var addPaymentView: some View {
+        NavigationView {
+            Form {
+                Section(localizedString("payment_details")) {
+                    HStack {
+                        Text("$")
+                        TextField(localizedString("amount"), text: $paymentAmount)
+                            .keyboardType(.decimalPad)
+                    }
+                    
+                    TextField(localizedString("note_optional"), text: $paymentNote)
+                }
+                
+                Section {
+                    Text(localizedString("remaining_after_payment") + ": " + remainingAfterPaymentText)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .navigationTitle(localizedString("add_payment"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(localizedString("cancel")) {
+                        paymentAmount = ""
+                        paymentNote = ""
+                        showingAddPayment = false
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(localizedString("add")) {
+                        addPayment()
+                    }
+                    .disabled(!isValidPayment)
+                }
+            }
+        }
+    }
+    
+    private var isValidPayment: Bool {
+        guard let amount = Double(paymentAmount), amount > 0 else { return false }
+        return amount <= debt.remainingAmount
+    }
+    
+    private var remainingAfterPaymentText: String {
+        guard let amount = Double(paymentAmount) else {
+            return debt.formattedRemainingAmount
+        }
+        let remaining = max(0, debt.remainingAmount - amount)
+        return remaining.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD"))
+    }
+    
+    private func addPayment() {
+        guard let amount = Double(paymentAmount) else { return }
+        debtStore.addPartialPayment(to: debt, amount: amount, note: paymentNote)
+        paymentAmount = ""
+        paymentNote = ""
+        showingAddPayment = false
+    }
+    
+    private func urgencyText(for level: Debt.UrgencyLevel) -> String {
+        switch level {
+        case .normal:
+            return localizedString("on_track")
+        case .medium:
+            return localizedString("approaching")
+        case .high:
+            return localizedString("urgent")
+        case .critical:
+            return localizedString("very_urgent")
+        case .overdue:
+            return localizedString("overdue")
+        }
     }
     
     private func localizedString(_ key: String) -> String {

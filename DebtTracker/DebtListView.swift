@@ -198,55 +198,84 @@ struct DebtRowView: View {
     }
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(debt.title)
-                    .font(.headline)
-                    .foregroundColor(debt.isPaid ? .secondary : .primary)
-                
-                Text(debt.isOwedToMe ? "\(localizedString("from")): \(debt.debtor)" : "\(localizedString("to")): \(debt.creditor)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
-                if let dueDate = debt.dueDate {
+        VStack(spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
                     HStack {
-                        Image(systemName: "calendar")
-                            .font(.caption)
-                        Text(dueDate, style: .date)
-                            .font(.caption)
+                        Text(debt.title)
+                            .font(.headline)
+                            .foregroundColor(debt.isPaid ? .secondary : .primary)
                         
-                        if debt.isOverdue {
-                            Text(localizedString("overdue"))
+                        // Urgency indicator
+                        if debt.dueDate != nil && !debt.isPaid {
+                            Image(systemName: debt.urgencyLevel.systemImageName)
                                 .font(.caption)
-                                .foregroundColor(.red)
+                                .foregroundColor(debt.urgencyLevel.color)
                         }
                     }
-                    .foregroundColor(.secondary)
+                    
+                    Text(debt.isOwedToMe ? "\(localizedString("from")): \(debt.debtor)" : "\(localizedString("to")): \(debt.creditor)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    if let dueDate = debt.dueDate {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .font(.caption)
+                            Text(dueDate, style: .date)
+                                .font(.caption)
+                            
+                            if let remainingDays = debt.remainingDays {
+                                Text("(\(remainingDays) \(localizedString("days")))")
+                                    .font(.caption)
+                                    .foregroundColor(debt.urgencyLevel.color)
+                            }
+                            
+                            if debt.isOverdue {
+                                Text(localizedString("overdue"))
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(userSettings.hideTotalAmount ? "••••" : debt.formattedAmount)
+                        .font(.headline)
+                        .foregroundColor(debt.isPaid ? .secondary : (debt.isOwedToMe ? .green : .red))
+                    
+                    if debt.partialPayments.count > 0 && !debt.isPaid {
+                        Text(localizedString("remaining") + ": " + (userSettings.hideTotalAmount ? "••••" : debt.formattedRemainingAmount))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        if debt.isPaid {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text(localizedString("paid"))
+                                .font(.caption)
+                                .foregroundColor(.green)
+                        } else {
+                            Button(action: { debtStore.markAsPaid(debt) }) {
+                                Image(systemName: "circle")
+                                    .foregroundColor(.blue)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
                 }
             }
             
-            Spacer()
-            
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(userSettings.hideTotalAmount ? "••••" : debt.formattedAmount)
-                    .font(.headline)
-                    .foregroundColor(debt.isPaid ? .secondary : (debt.isOwedToMe ? .green : .red))
-                
-                HStack {
-                    if debt.isPaid {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                        Text(localizedString("paid"))
-                            .font(.caption)
-                            .foregroundColor(.green)
-                    } else {
-                        Button(action: { debtStore.markAsPaid(debt) }) {
-                            Image(systemName: "circle")
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                }
+            // Payment progress bar
+            if debt.partialPayments.count > 0 && !debt.isPaid {
+                PaymentProgressView(debt: debt)
+                    .padding(.top, 4)
             }
         }
         .padding(.vertical, 4)
