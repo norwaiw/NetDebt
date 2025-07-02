@@ -26,6 +26,15 @@ struct AddDebtView: View {
         !debtor.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
+    private var amountWithInterest: Double? {
+        guard let principal = Double(amount),
+              let rate = Double(interestRate),
+              rate > 0 else {
+            return nil
+        }
+        return principal * (1 + rate / 100)
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -78,6 +87,15 @@ struct AddDebtView: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .frame(width: 80)
+                    }
+                    
+                    if let totalAmount = amountWithInterest {
+                        HStack {
+                            Text(localizedString("amount_with_interest"))
+                            Spacer()
+                            Text("$\(totalAmount, specifier: "%.2f")")
+                                .foregroundColor(.secondary)
+                        }
                     }
                     
                     TextField(localizedString("notes_optional"), text: $notes, axis: .vertical)

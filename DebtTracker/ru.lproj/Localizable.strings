@@ -56,6 +56,7 @@
 "set_due_date" = "Установить дату";
 "additional_details" = "Дополнительные детали";
 "interest_rate_percent" = "Процентная ставка (%)";
+"amount_with_interest" = "Сумма с процентами";
 "notes_optional" = "Заметки (необязательно)";
 "debt_details" = "Детали долга";
 "title_field" = "Название";
