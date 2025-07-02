@@ -41,6 +41,9 @@ class LocalizationHelper: ObservableObject {
         "appearance": "Appearance",
         "general": "General",
         
+        // Privacy
+        "hide_total_amounts": "Hide Total Amounts",
+        
         // Statistics
         "owed_to_me": "Owed to Me",
         "i_owe": "I Owe",
@@ -98,6 +101,9 @@ class LocalizationHelper: ObservableObject {
         "language": "Язык",
         "appearance": "Внешний вид",
         "general": "Общие",
+        
+        // Privacy
+        "hide_total_amounts": "Скрыть итоговые суммы",
         
         // Statistics
         "owed_to_me": "Мне должны",
@@ -157,6 +163,9 @@ class LocalizationHelper: ObservableObject {
         "language": "语言",
         "appearance": "外观",
         "general": "常规",
+        
+        // Privacy
+        "hide_total_amounts": "隐藏总金额",
         
         // Statistics
         "owed_to_me": "别人欠我的",
