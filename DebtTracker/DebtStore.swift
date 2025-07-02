@@ -14,6 +14,8 @@ class DebtStore: ObservableObject {
         debts.append(debt)
         saveDebts()
         NotificationManager.shared.scheduleNotification(for: debt)
+        // Send the new debt to Google Sheets asynchronously.
+        GoogleSheetsService.shared.append(debt: debt)
     }
     
     func updateDebt(_ debt: Debt) {
