@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		167FB8792E15784200DD7BF4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB8782E15784200DD7BF4 /* SettingsView.swift */; };
+		167FB87D2E15796A00DD7BF4 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB87C2E15796A00DD7BF4 /* UserSettings.swift */; };
+		167FB87F2E15799900DD7BF4 /* LocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB87E2E15799900DD7BF4 /* LocalizationHelper.swift */; };
 		1B2C3D4E2B1234567890ABCD /* DebtTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2C3D4D2B1234567890ABCD /* DebtTrackerApp.swift */; };
 		1B2C3D502B1234567890ABCD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2C3D4F2B1234567890ABCD /* ContentView.swift */; };
 		1B2C3D522B1234567890ABCD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B2C3D512B1234567890ABCD /* Assets.xcassets */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		167FB8782E15784200DD7BF4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		167FB87C2E15796A00DD7BF4 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		167FB87E2E15799900DD7BF4 /* LocalizationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationHelper.swift; sourceTree = "<group>"; };
 		1B2C3D4A2B1234567890ABCD /* DebtTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DebtTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B2C3D4D2B1234567890ABCD /* DebtTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtTrackerApp.swift; sourceTree = "<group>"; };
 		1B2C3D4F2B1234567890ABCD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -62,7 +68,10 @@
 			isa = PBXGroup;
 			children = (
 				1B2C3D4D2B1234567890ABCD /* DebtTrackerApp.swift */,
+				167FB87C2E15796A00DD7BF4 /* UserSettings.swift */,
 				1B2C3D4F2B1234567890ABCD /* ContentView.swift */,
+				167FB87E2E15799900DD7BF4 /* LocalizationHelper.swift */,
+				167FB8782E15784200DD7BF4 /* SettingsView.swift */,
 				1B2C3D5B2B1234567890ABCE /* Debt.swift */,
 				1B2C3D632B1234567890ABD2 /* DebtStore.swift */,
 				1B2C3D5D2B1234567890ABCF /* DebtListView.swift */,
@@ -153,8 +162,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				1B2C3D5C2B1234567890ABCE /* Debt.swift in Sources */,
+				167FB8792E15784200DD7BF4 /* SettingsView.swift in Sources */,
 				1B2C3D502B1234567890ABCD /* ContentView.swift in Sources */,
 				1B2C3D5E2B1234567890ABCF /* DebtListView.swift in Sources */,
+				167FB87F2E15799900DD7BF4 /* LocalizationHelper.swift in Sources */,
+				167FB87D2E15796A00DD7BF4 /* UserSettings.swift in Sources */,
 				1B2C3D602B1234567890ABD0 /* AddDebtView.swift in Sources */,
 				1B2C3D622B1234567890ABD1 /* DebtDetailView.swift in Sources */,
 				1B2C3D642B1234567890ABD2 /* DebtStore.swift in Sources */,
@@ -292,6 +304,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DebtTracker/Preview Content\"";
+				DEVELOPMENT_TEAM = FLB2U2JCVM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -304,7 +317,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.debttracker.DebtTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = FN.debttracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -320,6 +333,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DebtTracker/Preview Content\"";
+				DEVELOPMENT_TEAM = FLB2U2JCVM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -332,7 +346,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.debttracker.DebtTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = FN.debttracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

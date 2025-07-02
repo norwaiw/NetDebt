@@ -107,7 +107,7 @@ class LocalizationHelper: ObservableObject {
         "overdue_filter": "Просрочено",
         
         // Sort Options
-        "date_created": "Дата создания",
+        "date_created": "Дата созд",
         "amount": "Сумма",
         "due_date": "Срок оплаты",
         "title": "Название",
