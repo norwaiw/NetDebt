@@ -2,25 +2,39 @@ import SwiftUI
 
 struct DebtListView: View {
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
     @State private var showingAddDebt = false
     @State private var filterOption: FilterOption = .all
     @State private var sortOption: SortOption = .dateCreated
     @State private var searchText = ""
     
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
+    
     enum FilterOption: String, CaseIterable {
-        case all = "All"
-        case owedToMe = "Owed to Me"
-        case iOwe = "I Owe"
-        case unpaid = "Unpaid"
-        case paid = "Paid"
-        case overdue = "Overdue"
+        case all = "all"
+        case owedToMe = "owed_to_me_filter"
+        case iOwe = "i_owe_filter"
+        case unpaid = "unpaid_filter"
+        case paid = "paid_filter"
+        case overdue = "overdue_filter"
+        
+        func localizedName(for language: UserSettings.AppLanguage) -> String {
+            return LocalizationHelper.shared.localizedString(self.rawValue, language: language)
+        }
     }
     
     enum SortOption: String, CaseIterable {
-        case dateCreated = "Date Created"
-        case amount = "Amount"
-        case dueDate = "Due Date"
-        case title = "Title"
+        case dateCreated = "date_created"
+        case amount = "amount"
+        case dueDate = "due_date"
+        case title = "title"
+        
+        func localizedName(for language: UserSettings.AppLanguage) -> String {
+            return LocalizationHelper.shared.localizedString(self.rawValue, language: language)
+        }
     }
     
     private var filteredAndSortedDebts: [Debt] {
@@ -79,13 +93,13 @@ struct DebtListView: View {
                     HStack {
                         Menu {
                             ForEach(FilterOption.allCases, id: \.self) { option in
-                                Button(option.rawValue) {
+                                Button(option.localizedName(for: userSettings.selectedLanguage)) {
                                     filterOption = option
                                 }
                             }
                         } label: {
                             HStack {
-                                Text("Filter: \(filterOption.rawValue)")
+                                Text("\(localizedString("filter")): \(filterOption.localizedName(for: userSettings.selectedLanguage))")
                                 Image(systemName: "chevron.down")
                             }
                             .padding(.horizontal, 12)
@@ -98,13 +112,13 @@ struct DebtListView: View {
                         
                         Menu {
                             ForEach(SortOption.allCases, id: \.self) { option in
-                                Button(option.rawValue) {
+                                Button(option.localizedName(for: userSettings.selectedLanguage)) {
                                     sortOption = option
                                 }
                             }
                         } label: {
                             HStack {
-                                Text("Sort: \(sortOption.rawValue)")
+                                Text("\(localizedString("sort")): \(sortOption.localizedName(for: userSettings.selectedLanguage))")
                                 Image(systemName: "chevron.down")
                             }
                             .padding(.horizontal, 12)
@@ -132,8 +146,8 @@ struct DebtListView: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .navigationTitle("Debt Tracker")
-            .searchable(text: $searchText, prompt: "Search debts...")
+            .navigationTitle(localizedString("debt_tracker"))
+            .searchable(text: $searchText, prompt: localizedString("search_debts"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddDebt = true }) {
@@ -157,6 +171,12 @@ struct DebtListView: View {
 struct DebtRowView: View {
     let debt: Debt
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
     
     var body: some View {
         HStack {
@@ -165,7 +185,7 @@ struct DebtRowView: View {
                     .font(.headline)
                     .foregroundColor(debt.isPaid ? .secondary : .primary)
                 
-                Text(debt.isOwedToMe ? "From: \(debt.debtor)" : "To: \(debt.creditor)")
+                Text(debt.isOwedToMe ? "\(localizedString("from")): \(debt.debtor)" : "\(localizedString("to")): \(debt.creditor)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
@@ -177,7 +197,7 @@ struct DebtRowView: View {
                             .font(.caption)
                         
                         if debt.isOverdue {
-                            Text("(Overdue)")
+                            Text(localizedString("overdue"))
                                 .font(.caption)
                                 .foregroundColor(.red)
                         }
@@ -197,7 +217,7 @@ struct DebtRowView: View {
                     if debt.isPaid {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
-                        Text("Paid")
+                        Text(localizedString("paid"))
                             .font(.caption)
                             .foregroundColor(.green)
                     } else {
@@ -217,6 +237,12 @@ struct DebtRowView: View {
 
 struct EmptyStateView: View {
     let filterOption: DebtListView.FilterOption
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -237,17 +263,17 @@ struct EmptyStateView: View {
     private var emptyMessage: String {
         switch filterOption {
         case .all:
-            return "No debts found.\nTap + to add your first debt."
+            return localizedString("no_debts_found")
         case .owedToMe:
-            return "No one owes you money.\nLucky you!"
+            return localizedString("no_one_owes_you")
         case .iOwe:
-            return "You don't owe anyone money.\nGreat job!"
+            return localizedString("you_dont_owe")
         case .unpaid:
-            return "No unpaid debts found."
+            return localizedString("no_unpaid_debts")
         case .paid:
-            return "No paid debts found."
+            return localizedString("no_paid_debts")
         case .overdue:
-            return "No overdue debts.\nEverything is on track!"
+            return localizedString("no_overdue_debts")
         }
     }
 }
@@ -255,4 +281,5 @@ struct EmptyStateView: View {
 #Preview {
     DebtListView()
         .environmentObject(DebtStore())
+        .environmentObject(UserSettings())
 }

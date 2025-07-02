@@ -2,19 +2,31 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
     
     var body: some View {
         TabView {
             DebtListView()
                 .tabItem {
                     Image(systemName: "list.bullet")
-                    Text("Debts")
+                    Text(localizedString("debts"))
                 }
             
             StatisticsView()
                 .tabItem {
                     Image(systemName: "chart.bar")
-                    Text("Statistics")
+                    Text(localizedString("statistics"))
+                }
+            
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text(localizedString("settings"))
                 }
         }
         .accentColor(.blue)
@@ -23,6 +35,12 @@ struct ContentView: View {
 
 struct StatisticsView: View {
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
     
     var body: some View {
         NavigationView {
@@ -31,21 +49,21 @@ struct StatisticsView: View {
                     // Summary Cards
                     VStack(spacing: 16) {
                         SummaryCard(
-                            title: "Owed to Me",
+                            title: localizedString("owed_to_me"),
                             amount: debtStore.totalOwedToMe,
                             color: .green,
                             icon: "arrow.down.circle.fill"
                         )
                         
                         SummaryCard(
-                            title: "I Owe",
+                            title: localizedString("i_owe"),
                             amount: debtStore.totalIOwe,
                             color: .red,
                             icon: "arrow.up.circle.fill"
                         )
                         
                         SummaryCard(
-                            title: "Net Balance",
+                            title: localizedString("net_balance"),
                             amount: debtStore.totalOwedToMe - debtStore.totalIOwe,
                             color: debtStore.totalOwedToMe >= debtStore.totalIOwe ? .green : .red,
                             icon: "equal.circle.fill"
@@ -59,7 +77,7 @@ struct StatisticsView: View {
                             HStack {
                                 Image(systemName: "exclamationmark.triangle.fill")
                                     .foregroundColor(.orange)
-                                Text("Overdue Debts")
+                                Text(localizedString("overdue_debts"))
                                     .font(.headline)
                                     .fontWeight(.semibold)
                             }
@@ -76,16 +94,16 @@ struct StatisticsView: View {
                     
                     // Quick Stats
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Quick Stats")
+                        Text(localizedString("quick_stats"))
                             .font(.headline)
                             .fontWeight(.semibold)
                         
                         HStack {
-                            StatItem(title: "Total Debts", value: "\(debtStore.debts.count)")
+                            StatItem(title: localizedString("total_debts"), value: "\(debtStore.debts.count)")
                             Spacer()
-                            StatItem(title: "Unpaid", value: "\(debtStore.unpaidDebts.count)")
+                            StatItem(title: localizedString("unpaid"), value: "\(debtStore.unpaidDebts.count)")
                             Spacer()
-                            StatItem(title: "Paid", value: "\(debtStore.paidDebts.count)")
+                            StatItem(title: localizedString("paid"), value: "\(debtStore.paidDebts.count)")
                         }
                     }
                     .padding()
@@ -95,7 +113,7 @@ struct StatisticsView: View {
                 }
                 .padding(.vertical)
             }
-            .navigationTitle("Statistics")
+            .navigationTitle(localizedString("statistics"))
         }
     }
 }
@@ -139,6 +157,12 @@ struct SummaryCard: View {
 
 struct OverdueDebtRow: View {
     let debt: Debt
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    
+    private func localizedString(_ key: String) -> String {
+        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    }
     
     var body: some View {
         HStack {
@@ -160,7 +184,7 @@ struct OverdueDebtRow: View {
                     .foregroundColor(debt.isOwedToMe ? .green : .red)
                 
                 if let days = debt.remainingDays {
-                    Text("\(abs(days)) days overdue")
+                    Text("\(abs(days)) \(localizedString("days_overdue"))")
                         .font(.caption)
                         .foregroundColor(.orange)
                 }
@@ -189,4 +213,5 @@ struct StatItem: View {
 #Preview {
     ContentView()
         .environmentObject(DebtStore())
+        .environmentObject(UserSettings())
 }
