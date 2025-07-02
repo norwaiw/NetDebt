@@ -1,0 +1,47 @@
+"debts" = "Debts";
+"statistics" = "Statistics";
+"settings" = "Settings";
+
+"debt_tracker" = "Debt Tracker";
+"add_debt" = "Add Debt";
+
+"theme" = "Theme";
+"language" = "Language";
+"appearance" = "Appearance";
+"general" = "General";
+
+"owed_to_me" = "Owed to Me";
+"i_owe" = "I Owe";
+"net_balance" = "Net Balance";
+"overdue_debts" = "Overdue Debts";
+"quick_stats" = "Quick Stats";
+"total_debts" = "Total Debts";
+"unpaid" = "Unpaid";
+"paid" = "Paid";
+
+"all" = "All";
+"owed_to_me_filter" = "Owed to Me";
+"i_owe_filter" = "I Owe";
+"unpaid_filter" = "Unpaid";
+"paid_filter" = "Paid";
+"overdue_filter" = "Overdue";
+
+"date_created" = "Date Created";
+"amount" = "Amount";
+"due_date" = "Due Date";
+"title" = "Title";
+
+"filter" = "Filter";
+"sort" = "Sort";
+"search_debts" = "Search debts...";
+"from" = "From";
+"to" = "To";
+"overdue" = "(Overdue)";
+"days_overdue" = "days overdue";
+
+"no_debts_found" = "No debts found.\nTap + to add your first debt.";
+"no_one_owes_you" = "No one owes you money.\nLucky you!";
+"you_dont_owe" = "You don't owe anyone money.\nGreat job!";
+"no_unpaid_debts" = "No unpaid debts found.";
+"no_paid_debts" = "No paid debts found.";
+"no_overdue_debts" = "No overdue debts.\nEverything is on track!";
