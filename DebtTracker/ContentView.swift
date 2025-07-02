@@ -114,6 +114,15 @@ struct StatisticsView: View {
                 .padding(.vertical)
             }
             .navigationTitle(localizedString("statistics"))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        userSettings.updateHideTotalAmount(!userSettings.hideTotalAmount)
+                    }) {
+                        Image(systemName: userSettings.hideTotalAmount ? "eye" : "eye.slash")
+                    }
+                }
+            }
         }
     }
 }
@@ -180,7 +189,7 @@ struct OverdueDebtRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 4) {
-                Text(debt.formattedAmount)
+                Text(userSettings.hideTotalAmount ? "••••" : debt.formattedAmount)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(debt.isOwedToMe ? .green : .red)
