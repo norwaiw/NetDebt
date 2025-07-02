@@ -56,6 +56,7 @@
 "set_due_date" = "设置到期日";
 "additional_details" = "附加信息";
 "interest_rate_percent" = "利率 (%)";
+"amount_with_interest" = "含利息金额";
 "notes_optional" = "备注 (可选)";
 "debt_details" = "债务详情";
 "title_field" = "标题";
