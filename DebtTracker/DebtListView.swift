@@ -297,8 +297,10 @@ struct EmptyStateView: View {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     DebtListView()
         .environmentObject(DebtStore())
         .environmentObject(UserSettings())
 }
+#endif

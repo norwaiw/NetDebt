@@ -1,4 +1,4 @@
-import SwiftUICore
+import SwiftUI
 
 
 struct DebtDetailView: View {
@@ -305,7 +305,7 @@ struct DebtDetailView: View {
         updatedDebt.isOwedToMe = editIsOwedToMe
         updatedDebt.dueDate = editHasDueDate ? editDueDate : nil
         updatedDebt.notes = editNotes.trimmingCharacters(in: .whitespaces)
-        updatedDebt.interestRate = Double(editInterestRate) ?? 0.0
+        updatedDebt.interestRate = max(Double(editInterestRate) ?? 0.0, 0.0)
         
         debtStore.updateDebt(updatedDebt)
         isEditing = false
@@ -341,6 +341,7 @@ struct DetailRow: View {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     NavigationView {
         DebtDetailView(debt: Debt(
@@ -355,3 +356,4 @@ struct DetailRow: View {
     }
     .environmentObject(DebtStore())
 }
+#endif

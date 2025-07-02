@@ -5,6 +5,9 @@ final class NotificationManager {
     static let shared = NotificationManager()
     private init() { }
 
+    // Keep track of the latest authorisation status so we don't schedule when denied.
+    private var authorizationGranted: Bool = false
+
     // Ask the user for permission to show notifications. Call this once – for example, on app launch.
     func requestAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
@@ -12,12 +15,20 @@ final class NotificationManager {
                 print("[NotificationManager] Authorization error: \(error.localizedDescription)")
             } else {
                 print("[NotificationManager] Authorization granted: \(granted)")
+                self.authorizationGranted = granted
             }
         }
     }
 
     // Schedule a one-off notification that fires `daysBefore` days before the debt's due date.
     func scheduleNotification(for debt: Debt, daysBefore: Int = 3) {
+        guard authorizationGranted else {
+            // If we haven't asked yet, request now and exit; caller can retry later.
+            requestAuthorization()
+            print("[NotificationManager] Cannot schedule – not authorised yet.")
+            return
+        }
+
         guard let dueDate = debt.dueDate, !debt.isPaid else { return }
 
         // Calculate the trigger date (due date minus the offset).

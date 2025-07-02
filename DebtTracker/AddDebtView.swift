@@ -114,7 +114,7 @@ struct AddDebtView: View {
             dueDate: hasDueDate ? dueDate : nil,
             isOwedToMe: isOwedToMe,
             notes: notes.trimmingCharacters(in: .whitespaces),
-            interestRate: Double(interestRate) ?? 0.0
+            interestRate: max(Double(interestRate) ?? 0.0, 0.0)
         )
         
         debtStore.addDebt(debt)
@@ -126,8 +126,10 @@ struct AddDebtView: View {
     }
 }
 
+#if swift(>=5.9)
 #Preview {
     AddDebtView()
         .environmentObject(DebtStore())
         .environmentObject(UserSettings())
 }
+#endif
