@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Binding var selectedTab: Int
     @EnvironmentObject var userSettings: UserSettings
     @ObservedObject private var localizationHelper = LocalizationHelper.shared
     
@@ -127,6 +128,10 @@ struct SettingsView: View {
                         .padding()
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
+                        .onTapGesture {
+                            // Switch to the Statistics tab (tag 1)
+                            selectedTab = 1
+                        }
                     }
                 } header: {
                     Text("Preview")
@@ -138,6 +143,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(selectedTab: .constant(0))
         .environmentObject(UserSettings())
 }

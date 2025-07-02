@@ -4,30 +4,34 @@ struct ContentView: View {
     @EnvironmentObject var debtStore: DebtStore
     @EnvironmentObject var userSettings: UserSettings
     @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    @State private var selectedTab = 0
     
     private func localizedString(_ key: String) -> String {
         return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
     }
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             DebtListView()
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text(localizedString("debts"))
                 }
+                .tag(0)
             
             StatisticsView()
                 .tabItem {
                     Image(systemName: "chart.bar")
                     Text(localizedString("statistics"))
                 }
+                .tag(1)
             
-            SettingsView()
+            SettingsView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: "gearshape.fill")
                     Text(localizedString("settings"))
                 }
+                .tag(2)
         }
         .accentColor(.blue)
     }
