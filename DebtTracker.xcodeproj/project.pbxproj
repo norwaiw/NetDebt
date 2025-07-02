@@ -10,6 +10,7 @@
 		167FB8792E15784200DD7BF4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB8782E15784200DD7BF4 /* SettingsView.swift */; };
 		167FB87D2E15796A00DD7BF4 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB87C2E15796A00DD7BF4 /* UserSettings.swift */; };
 		167FB87F2E15799900DD7BF4 /* LocalizationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB87E2E15799900DD7BF4 /* LocalizationHelper.swift */; };
+		167FB8832E15E94300DD7BF4 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 167FB8822E15E94300DD7BF4 /* NotificationManager.swift */; };
 		1B2C3D4E2B1234567890ABCD /* DebtTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2C3D4D2B1234567890ABCD /* DebtTrackerApp.swift */; };
 		1B2C3D502B1234567890ABCD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2C3D4F2B1234567890ABCD /* ContentView.swift */; };
 		1B2C3D522B1234567890ABCD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1B2C3D512B1234567890ABCD /* Assets.xcassets */; };
@@ -25,6 +26,7 @@
 		167FB8782E15784200DD7BF4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		167FB87C2E15796A00DD7BF4 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		167FB87E2E15799900DD7BF4 /* LocalizationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationHelper.swift; sourceTree = "<group>"; };
+		167FB8822E15E94300DD7BF4 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		1B2C3D4A2B1234567890ABCD /* DebtTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DebtTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B2C3D4D2B1234567890ABCD /* DebtTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtTrackerApp.swift; sourceTree = "<group>"; };
 		1B2C3D4F2B1234567890ABCD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				1B2C3D5D2B1234567890ABCF /* DebtListView.swift */,
 				1B2C3D5F2B1234567890ABD0 /* AddDebtView.swift */,
 				1B2C3D612B1234567890ABD1 /* DebtDetailView.swift */,
+				167FB8822E15E94300DD7BF4 /* NotificationManager.swift */,
 				1B2C3D512B1234567890ABCD /* Assets.xcassets */,
 				1B2C3D532B1234567890ABCD /* Preview Content */,
 			);
@@ -165,6 +168,7 @@
 				167FB8792E15784200DD7BF4 /* SettingsView.swift in Sources */,
 				1B2C3D502B1234567890ABCD /* ContentView.swift in Sources */,
 				1B2C3D5E2B1234567890ABCF /* DebtListView.swift in Sources */,
+				167FB8832E15E94300DD7BF4 /* NotificationManager.swift in Sources */,
 				167FB87F2E15799900DD7BF4 /* LocalizationHelper.swift in Sources */,
 				167FB87D2E15796A00DD7BF4 /* UserSettings.swift in Sources */,
 				1B2C3D602B1234567890ABD0 /* AddDebtView.swift in Sources */,
