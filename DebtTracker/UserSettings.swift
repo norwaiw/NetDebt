@@ -1,7 +1,8 @@
 import SwiftUI
 import Foundation
 
-class UserSettings: ObservableObject {
+@MainActor
+final class UserSettings: ObservableObject {
     @Published var selectedTheme: AppTheme = .system
     @Published var selectedLanguage: AppLanguage = .english
     
