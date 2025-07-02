@@ -66,7 +66,7 @@ struct Debt: Identifiable, Codable {
     
     // Urgency level based on due date
     var urgencyLevel: UrgencyLevel {
-        guard let dueDate = dueDate, !isPaid else { return .normal }
+        guard dueDate != nil, !isPaid else { return .normal }
         let daysRemaining = remainingDays ?? 0
         
         if daysRemaining < 0 {
