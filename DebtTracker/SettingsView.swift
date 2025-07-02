@@ -108,45 +108,6 @@ struct SettingsView: View {
                 } header: {
                     Text(localizedString("general"))
                 }
-                
-                // Theme Preview Section
-                Section {
-                    VStack(spacing: 16) {
-                        // Theme preview card
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(localizedString("debt_tracker"))
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
-                                
-                                Text(localizedString("owed_to_me"))
-                                    .font(.subheadline)
-                                    .foregroundColor(.green)
-                                
-                                Text(localizedString("i_owe"))
-                                    .font(.subheadline)
-                                    .foregroundColor(.red)
-                            }
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 8) {
-                                Text("$1,250.00")
-                                    .font(.headline)
-                                    .foregroundColor(.green)
-                                
-                                Text("$500.00")
-                                    .font(.headline)
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-                } header: {
-                    Text("Preview")
-                }
             }
             .navigationTitle(localizedString("settings"))
         }
