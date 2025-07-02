@@ -140,6 +140,16 @@ struct DebtListView: View {
                             NavigationLink(destination: DebtDetailView(debt: debt)) {
                                 DebtRowView(debt: debt)
                             }
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                if !debt.isPaid {
+                                    Button {
+                                        debtStore.markAsPaid(debt)
+                                    } label: {
+                                        Label(localizedString("mark_as_paid"), systemImage: "checkmark.circle")
+                                    }
+                                    .tint(.green)
+                                }
+                            }
                         }
                         .onDelete(perform: deleteDebts)
                     }
@@ -147,6 +157,7 @@ struct DebtListView: View {
                 }
             }
             .navigationTitle(localizedString("debt_tracker"))
+            .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: localizedString("search_debts"))
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
