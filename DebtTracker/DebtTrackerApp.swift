@@ -11,6 +11,9 @@ struct DebtTrackerApp: App {
                 .environmentObject(debtStore)
                 .environmentObject(userSettings)
                 .preferredColorScheme(userSettings.selectedTheme.colorScheme)
+                .onAppear {
+                    NotificationManager.shared.requestAuthorization()
+                }
         }
     }
 }
