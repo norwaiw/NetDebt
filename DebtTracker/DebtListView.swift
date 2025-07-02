@@ -149,7 +149,15 @@ struct DebtListView: View {
             .navigationTitle(localizedString("debt_tracker"))
             .searchable(text: $searchText, prompt: localizedString("search_debts"))
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    // Toggle hide/show amounts button
+                    Button(action: {
+                        userSettings.updateHideTotalAmount(!userSettings.hideTotalAmount)
+                    }) {
+                        Image(systemName: userSettings.hideTotalAmount ? "eye" : "eye.slash")
+                    }
+
+                    // Existing add button
                     Button(action: { showingAddDebt = true }) {
                         Image(systemName: "plus")
                     }
@@ -209,7 +217,7 @@ struct DebtRowView: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 4) {
-                Text(debt.formattedAmount)
+                Text(userSettings.hideTotalAmount ? "••••" : debt.formattedAmount)
                     .font(.headline)
                     .foregroundColor(debt.isPaid ? .secondary : (debt.isOwedToMe ? .green : .red))
                 
