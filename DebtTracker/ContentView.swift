@@ -124,6 +124,8 @@ struct SummaryCard: View {
     let color: Color
     let icon: String
     
+    @EnvironmentObject var userSettings: UserSettings
+    
     private var formattedAmount: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -141,7 +143,7 @@ struct SummaryCard: View {
                 Text(title)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Text(formattedAmount)
+                Text(userSettings.hideTotalAmount ? "••••" : formattedAmount)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(color)

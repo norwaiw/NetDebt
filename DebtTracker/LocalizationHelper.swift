@@ -6,11 +6,22 @@ class LocalizationHelper: ObservableObject {
     private init() {}
     
     func localizedString(_ key: String, language: UserSettings.AppLanguage) -> String {
+        // First, try to fetch from .strings file inside the corresponding .lproj bundle
+        if let path = Bundle.main.path(forResource: language.rawValue, ofType: "lproj"),
+           let bundle = Bundle(path: path) {
+            let localized = NSLocalizedString(key, tableName: nil, bundle: bundle, value: key, comment: "")
+            if localized != key { // Found a translation in bundle
+                return localized
+            }
+        }
+        // Fallback to in-memory dictionaries
         switch language {
         case .english:
             return englishStrings[key] ?? key
         case .russian:
             return russianStrings[key] ?? key
+        case .chinese:
+            return chineseStrings[key] ?? key
         }
     }
     
@@ -29,6 +40,9 @@ class LocalizationHelper: ObservableObject {
         "language": "Language",
         "appearance": "Appearance",
         "general": "General",
+        
+        // Privacy
+        "hide_total_amounts": "Hide Total Amounts",
         
         // Statistics
         "owed_to_me": "Owed to Me",
@@ -88,6 +102,9 @@ class LocalizationHelper: ObservableObject {
         "appearance": "Внешний вид",
         "general": "Общие",
         
+        // Privacy
+        "hide_total_amounts": "Скрыть итоговые суммы",
+        
         // Statistics
         "owed_to_me": "Мне должны",
         "i_owe": "Я должен",
@@ -128,5 +145,67 @@ class LocalizationHelper: ObservableObject {
         "no_unpaid_debts": "Неоплаченные долги не найдены.",
         "no_paid_debts": "Оплаченные долги не найдены.",
         "no_overdue_debts": "Нет просроченных долгов.\nВсё идёт по плану!"
+    ]
+    
+    private let chineseStrings: [String: String] = [
+        // TODO: Provide proper Simplified Chinese translations. Currently placeholders equal English.
+        // Tab Items
+        "debts": "债务",
+        "statistics": "统计",
+        "settings": "设置",
+        
+        // Main Navigation
+        "debt_tracker": "债务跟踪",
+        "add_debt": "添加债务",
+        
+        // Settings
+        "theme": "主题",
+        "language": "语言",
+        "appearance": "外观",
+        "general": "常规",
+        
+        // Privacy
+        "hide_total_amounts": "隐藏总金额",
+        
+        // Statistics
+        "owed_to_me": "别人欠我的",
+        "i_owe": "我欠别人的",
+        "net_balance": "净余额",
+        "overdue_debts": "逾期债务",
+        "quick_stats": "快速统计",
+        "total_debts": "总债务",
+        "unpaid": "未支付",
+        "paid": "已支付",
+        
+        // Filters
+        "all": "全部",
+        "owed_to_me_filter": "别人欠我的",
+        "i_owe_filter": "我欠别人的",
+        "unpaid_filter": "未支付",
+        "paid_filter": "已支付",
+        "overdue_filter": "逾期",
+        
+        // Sort Options
+        "date_created": "创建日期",
+        "amount": "金额",
+        "due_date": "到期日",
+        "title": "标题",
+        
+        // Common
+        "filter": "筛选",
+        "sort": "排序",
+        "search_debts": "搜索债务...",
+        "from": "来自",
+        "to": "到",
+        "overdue": "(逾期)",
+        "days_overdue": "天逾期",
+        
+        // Empty States
+        "no_debts_found": "未找到债务。\n点击 + 添加第一笔债务。",
+        "no_one_owes_you": "没有人欠你钱。\n恭喜！",
+        "you_dont_owe": "你不欠任何人钱。\n干得好！",
+        "no_unpaid_debts": "未找到未支付债务。",
+        "no_paid_debts": "未找到已支付债务。",
+        "no_overdue_debts": "没有逾期债务。\n一切进展顺利！"
     ]
 }

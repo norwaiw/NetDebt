@@ -89,6 +89,22 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                    
+                    // Hide Total Amount Toggle
+                    Toggle(isOn: Binding(get: {
+                        userSettings.hideTotalAmount
+                    }, set: { newValue in
+                        userSettings.updateHideTotalAmount(newValue)
+                    })) {
+                        HStack {
+                            Image(systemName: "eye.slash")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            Text(localizedString("hide_total_amounts"))
+                                .font(.body)
+                        }
+                    }
+                    .padding(.vertical, 4)
                 } header: {
                     Text(localizedString("general"))
                 }

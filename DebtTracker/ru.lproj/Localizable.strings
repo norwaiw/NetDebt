@@ -1,0 +1,77 @@
+"debts" = "Долги";
+"statistics" = "Статистика";
+"settings" = "Настройки";
+
+"debt_tracker" = "Учёт Долгов";
+"add_debt" = "Добавить Долг";
+
+"theme" = "Тема";
+"language" = "Язык";
+"appearance" = "Внешний вид";
+"general" = "Общие";
+
+"owed_to_me" = "Мне должны";
+"i_owe" = "Я должен";
+"net_balance" = "Чистый баланс";
+"overdue_debts" = "Просроченные долги";
+"quick_stats" = "Быстрая статистика";
+"total_debts" = "Всего долгов";
+"unpaid" = "Неоплачено";
+"paid" = "Оплачено";
+
+"all" = "Все";
+"owed_to_me_filter" = "Мне должны";
+"i_owe_filter" = "Я должен";
+"unpaid_filter" = "Неоплачено";
+"paid_filter" = "Оплачено";
+"overdue_filter" = "Просрочено";
+
+"date_created" = "Дата созд";
+"amount" = "Сумма";
+"due_date" = "Срок оплаты";
+"title" = "Название";
+
+"filter" = "Фильтр";
+"sort" = "Сортировка";
+"search_debts" = "Поиск долгов...";
+"from" = "От";
+"to" = "Кому";
+"overdue" = "(Просрочено)";
+"days_overdue" = "дней просрочки";
+
+"no_debts_found" = "Долги не найдены.\nНажмите + чтобы добавить первый долг.";
+"no_one_owes_you" = "Никто вам не должен.\nВезёт!";
+"you_dont_owe" = "Вы никому не должны.\nОтличная работа!";
+"no_unpaid_debts" = "Неоплаченные долги не найдены.";
+"no_paid_debts" = "Оплаченные долги не найдены.";
+"no_overdue_debts" = "Нет просроченных долгов.\nВсё идёт по плану!";
+
+"type" = "Тип";
+"someone_owes_me" = "Кто-то должен мне";
+"i_owe_someone" = "Я должен кому-то";
+"people" = "Люди";
+"who_owes_you" = "Кто вам должен?";
+"who_do_you_owe" = "Кому вы должны?";
+"your_name" = "Ваше имя";
+"set_due_date" = "Установить дату";
+"additional_details" = "Дополнительные детали";
+"interest_rate_percent" = "Процентная ставка (%)";
+"notes_optional" = "Заметки (необязательно)";
+"debt_details" = "Детали долга";
+"title_field" = "Название";
+"cancel" = "Отмена";
+"save" = "Сохранить";
+"edit_debt" = "Редактировать долг";
+"edit" = "Редактировать";
+"creditor" = "Кредитор";
+"creditor_you" = "Кредитор (Вы)";
+"debtor" = "Должник";
+"debtor_you" = "Должник (Вы)";
+"dates" = "Даты";
+"created" = "Создан";
+"days_remaining" = "Осталось дней";
+"mark_as_paid" = "Отметить как оплачено";
+"delete_debt" = "Удалить долг";
+"delete_debt_title" = "Удалить долг";
+"delete_debt_message" = "Вы уверены, что хотите удалить этот долг? Это действие нельзя отменить.";
+"notes" = "Заметки";

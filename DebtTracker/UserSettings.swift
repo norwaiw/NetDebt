@@ -5,6 +5,7 @@ import Foundation
 final class UserSettings: ObservableObject {
     @Published var selectedTheme: AppTheme = .system
     @Published var selectedLanguage: AppLanguage = .english
+    @Published var hideTotalAmount: Bool = false
     
     enum AppTheme: String, CaseIterable {
         case light = "light"
@@ -25,11 +26,23 @@ final class UserSettings: ObservableObject {
         func localizedName(for language: AppLanguage) -> String {
             switch self {
             case .light:
-                return language == .english ? "Light" : "Светлая"
+                switch language {
+                case .english: return "Light"
+                case .russian: return "Светлая"
+                case .chinese: return "浅色"
+                }
             case .dark:
-                return language == .english ? "Dark" : "Тёмная"
+                switch language {
+                case .english: return "Dark"
+                case .russian: return "Тёмная"
+                case .chinese: return "深色"
+                }
             case .system:
-                return language == .english ? "System" : "Системная"
+                switch language {
+                case .english: return "System"
+                case .russian: return "Системная"
+                case .chinese: return "系统"
+                }
             }
         }
     }
@@ -37,6 +50,7 @@ final class UserSettings: ObservableObject {
     enum AppLanguage: String, CaseIterable {
         case english = "en"
         case russian = "ru"
+        case chinese = "zh-Hans"
         
         var localizedName: String {
             switch self {
@@ -44,6 +58,8 @@ final class UserSettings: ObservableObject {
                 return "English"
             case .russian:
                 return "Русский"
+            case .chinese:
+                return "中文"
             }
         }
         
@@ -54,6 +70,7 @@ final class UserSettings: ObservableObject {
     
     private let themeKey = "selectedTheme"
     private let languageKey = "selectedLanguage"
+    private let hideTotalAmountKey = "hideTotalAmount"
     
     init() {
         loadSettings()
@@ -69,11 +86,17 @@ final class UserSettings: ObservableObject {
            let language = AppLanguage(rawValue: languageString) {
             selectedLanguage = language
         }
+        
+        // Load hide total amount preference
+        if UserDefaults.standard.object(forKey: hideTotalAmountKey) != nil {
+            hideTotalAmount = UserDefaults.standard.bool(forKey: hideTotalAmountKey)
+        }
     }
     
     func saveSettings() {
         UserDefaults.standard.set(selectedTheme.rawValue, forKey: themeKey)
         UserDefaults.standard.set(selectedLanguage.rawValue, forKey: languageKey)
+        UserDefaults.standard.set(hideTotalAmount, forKey: hideTotalAmountKey)
     }
     
     func updateTheme(_ theme: AppTheme) {
@@ -83,6 +106,11 @@ final class UserSettings: ObservableObject {
     
     func updateLanguage(_ language: AppLanguage) {
         selectedLanguage = language
+        saveSettings()
+    }
+    
+    func updateHideTotalAmount(_ hide: Bool) {
+        hideTotalAmount = hide
         saveSettings()
     }
 }
