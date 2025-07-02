@@ -1,4 +1,5 @@
-THIS SHOULD BE A LINTER ERRORimport SwiftUI
+import SwiftUICore
+
 
 struct DebtDetailView: View {
     @EnvironmentObject var debtStore: DebtStore
