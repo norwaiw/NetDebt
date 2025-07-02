@@ -129,4 +129,5 @@ struct AddDebtView: View {
 #Preview {
     AddDebtView()
         .environmentObject(DebtStore())
+        .environmentObject(UserSettings())
 }

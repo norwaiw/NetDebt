@@ -353,4 +353,5 @@ struct DetailRow: View {
         ))
     }
     .environmentObject(DebtStore())
+    .environmentObject(UserSettings())
 }
