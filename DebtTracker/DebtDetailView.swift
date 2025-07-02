@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DebtDetailView: View {
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
     @Environment(\.dismiss) private var dismiss
     
     let debt: Debt
@@ -67,19 +69,19 @@ struct DebtDetailView: View {
                 
                 // People
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("People")
+                    Text(localizedString("people"))
                         .font(.headline)
                         .fontWeight(.semibold)
                     
                     VStack(spacing: 12) {
                         DetailRow(
-                            title: debt.isOwedToMe ? "Creditor (You)" : "Creditor",
+                            title: debt.isOwedToMe ? localizedString("creditor_you") : localizedString("creditor"),
                             value: debt.creditor,
                             icon: "person.fill"
                         )
                         
                         DetailRow(
-                            title: debt.isOwedToMe ? "Debtor" : "Debtor (You)",
+                            title: debt.isOwedToMe ? localizedString("debtor") : localizedString("debtor_you"),
                             value: debt.debtor,
                             icon: "person"
                         )
@@ -89,20 +91,20 @@ struct DebtDetailView: View {
                 
                 // Dates
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Dates")
+                    Text(localizedString("dates"))
                         .font(.headline)
                         .fontWeight(.semibold)
                     
                     VStack(spacing: 12) {
                         DetailRow(
-                            title: "Created",
+                            title: localizedString("created"),
                             value: debt.dateCreated.formatted(date: .abbreviated, time: .omitted),
                             icon: "calendar.badge.plus"
                         )
                         
                         if let dueDate = debt.dueDate {
                             DetailRow(
-                                title: "Due Date",
+                                title: localizedString("due_date"),
                                 value: dueDate.formatted(date: .abbreviated, time: .omitted),
                                 icon: "calendar.badge.exclamationmark",
                                 valueColor: debt.isOverdue ? .red : .primary
@@ -110,7 +112,7 @@ struct DebtDetailView: View {
                             
                             if let remainingDays = debt.remainingDays {
                                 DetailRow(
-                                    title: "Days Remaining",
+                                    title: localizedString("days_remaining"),
                                     value: remainingDays >= 0 ? "\(remainingDays) days" : "\(abs(remainingDays)) days overdue",
                                     icon: "clock",
                                     valueColor: remainingDays >= 0 ? .primary : .red
@@ -124,14 +126,14 @@ struct DebtDetailView: View {
                 // Additional Details
                 if debt.interestRate > 0 || !debt.notes.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Additional Details")
+                        Text(localizedString("additional_details"))
                             .font(.headline)
                             .fontWeight(.semibold)
                         
                         VStack(spacing: 12) {
                             if debt.interestRate > 0 {
                                 DetailRow(
-                                    title: "Interest Rate",
+                                    title: localizedString("interest_rate_percent"),
                                     value: String(format: "%.2f%%", debt.interestRate),
                                     icon: "percent"
                                 )
@@ -142,7 +144,7 @@ struct DebtDetailView: View {
                                     HStack {
                                         Image(systemName: "note.text")
                                             .foregroundColor(.blue)
-                                        Text("Notes")
+                                        Text(localizedString("notes"))
                                             .font(.subheadline)
                                             .fontWeight(.medium)
                                     }
@@ -165,7 +167,7 @@ struct DebtDetailView: View {
                         Button(action: { debtStore.markAsPaid(debt) }) {
                             HStack {
                                 Image(systemName: "checkmark.circle")
-                                Text("Mark as Paid")
+                                Text(localizedString("mark_as_paid"))
                             }
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -178,7 +180,7 @@ struct DebtDetailView: View {
                     Button(action: { showingDeleteAlert = true }) {
                         HStack {
                             Image(systemName: "trash")
-                            Text("Delete Debt")
+                            Text(localizedString("delete_debt"))
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -194,60 +196,60 @@ struct DebtDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") {
+                Button(localizedString("edit")) {
                     startEditing()
                 }
             }
         }
-        .alert("Delete Debt", isPresented: $showingDeleteAlert) {
-            Button("Delete", role: .destructive) {
+        .alert(localizedString("delete_debt_title"), isPresented: $showingDeleteAlert) {
+            Button(localizedString("delete_debt"), role: .destructive) {
                 debtStore.deleteDebt(debt)
                 dismiss()
             }
-            Button("Cancel", role: .cancel) { }
+            Button(localizedString("cancel"), role: .cancel) { }
         } message: {
-            Text("Are you sure you want to delete this debt? This action cannot be undone.")
+            Text(localizedString("delete_debt_message"))
         }
     }
     
     private var editingView: some View {
         NavigationView {
             Form {
-                Section("Debt Details") {
-                    TextField("Title", text: $editTitle)
+                Section(localizedString("debt_details")) {
+                    TextField(localizedString("title_field"), text: $editTitle)
                         .textInputAutocapitalization(.words)
                     
                     HStack {
                         Text("$")
-                        TextField("Amount", text: $editAmount)
+                        TextField(localizedString("amount"), text: $editAmount)
                             .keyboardType(.decimalPad)
                     }
                     
-                    Picker("Type", selection: $editIsOwedToMe) {
-                        Text("Someone owes me").tag(true)
-                        Text("I owe someone").tag(false)
+                    Picker(localizedString("type"), selection: $editIsOwedToMe) {
+                        Text(localizedString("someone_owes_me")).tag(true)
+                        Text(localizedString("i_owe_someone")).tag(false)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
                 
-                Section("People") {
-                    TextField("Creditor", text: $editCreditor)
+                Section(localizedString("people")) {
+                    TextField(localizedString("creditor"), text: $editCreditor)
                         .textInputAutocapitalization(.words)
-                    TextField("Debtor", text: $editDebtor)
+                    TextField(localizedString("debtor"), text: $editDebtor)
                         .textInputAutocapitalization(.words)
                 }
                 
-                Section("Due Date") {
-                    Toggle("Set due date", isOn: $editHasDueDate)
+                Section(localizedString("due_date")) {
+                    Toggle(localizedString("set_due_date"), isOn: $editHasDueDate)
                     
                     if editHasDueDate {
-                        DatePicker("Due date", selection: $editDueDate, displayedComponents: .date)
+                        DatePicker(localizedString("due_date"), selection: $editDueDate, displayedComponents: .date)
                     }
                 }
                 
-                Section("Additional Details") {
+                Section(localizedString("additional_details")) {
                     HStack {
-                        Text("Interest Rate (%)")
+                        Text(localizedString("interest_rate_percent"))
                         Spacer()
                         TextField("0.0", text: $editInterestRate)
                             .keyboardType(.decimalPad)
@@ -255,21 +257,21 @@ struct DebtDetailView: View {
                             .frame(width: 80)
                     }
                     
-                    TextField("Notes (optional)", text: $editNotes, axis: .vertical)
+                    TextField(localizedString("notes_optional"), text: $editNotes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("Edit Debt")
+            .navigationTitle(localizedString("edit_debt"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(localizedString("cancel")) {
                         isEditing = false
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
+                    Button(localizedString("save")) {
                         saveChanges()
                     }
                     .disabled(!isValidForm)
@@ -306,6 +308,10 @@ struct DebtDetailView: View {
         
         debtStore.updateDebt(updatedDebt)
         isEditing = false
+    }
+    
+    private func localizedString(_ key: String) -> String {
+        localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
     }
 }
 

@@ -3,6 +3,8 @@ import SwiftUI
 struct AddDebtView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var debtStore: DebtStore
+    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject private var localizationHelper = LocalizationHelper.shared
     
     @State private var title = ""
     @State private var amount = ""
@@ -27,50 +29,50 @@ struct AddDebtView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section("Debt Details") {
-                    TextField("Title", text: $title)
+                Section(localizedString("debt_details")) {
+                    TextField(localizedString("title_field"), text: $title)
                         .textInputAutocapitalization(.words)
                     
                     HStack {
                         Text("$")
-                        TextField("Amount", text: $amount)
+                        TextField(localizedString("amount"), text: $amount)
                             .keyboardType(.decimalPad)
                             .focused($isAmountFocused)
                     }
                     
-                    Picker("Type", selection: $isOwedToMe) {
-                        Text("Someone owes me").tag(true)
-                        Text("I owe someone").tag(false)
+                    Picker(localizedString("type"), selection: $isOwedToMe) {
+                        Text(localizedString("someone_owes_me")).tag(true)
+                        Text(localizedString("i_owe_someone")).tag(false)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
                 
-                Section("People") {
+                Section(localizedString("people")) {
                     if isOwedToMe {
-                        TextField("Who owes you?", text: $debtor)
+                        TextField(localizedString("who_owes_you"), text: $debtor)
                             .textInputAutocapitalization(.words)
-                        TextField("Your name", text: $creditor)
+                        TextField(localizedString("your_name"), text: $creditor)
                             .textInputAutocapitalization(.words)
                     } else {
-                        TextField("Who do you owe?", text: $creditor)
+                        TextField(localizedString("who_do_you_owe"), text: $creditor)
                             .textInputAutocapitalization(.words)
-                        TextField("Your name", text: $debtor)
+                        TextField(localizedString("your_name"), text: $debtor)
                             .textInputAutocapitalization(.words)
                     }
                 }
                 
-                Section("Due Date") {
-                    Toggle("Set due date", isOn: $hasDueDate)
+                Section(localizedString("due_date")) {
+                    Toggle(localizedString("set_due_date"), isOn: $hasDueDate)
                     
                     if hasDueDate {
-                        DatePicker("Due date", selection: $dueDate, displayedComponents: .date)
+                        DatePicker(localizedString("due_date"), selection: $dueDate, displayedComponents: .date)
                             .datePickerStyle(GraphicalDatePickerStyle())
                     }
                 }
                 
-                Section("Additional Details") {
+                Section(localizedString("additional_details")) {
                     HStack {
-                        Text("Interest Rate (%)")
+                        Text(localizedString("interest_rate_percent"))
                         Spacer()
                         TextField("0.0", text: $interestRate)
                             .keyboardType(.decimalPad)
@@ -78,21 +80,21 @@ struct AddDebtView: View {
                             .frame(width: 80)
                     }
                     
-                    TextField("Notes (optional)", text: $notes, axis: .vertical)
+                    TextField(localizedString("notes_optional"), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("Add Debt")
+            .navigationTitle(localizedString("add_debt"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(localizedString("cancel")) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
+                    Button(localizedString("save")) {
                         saveDebt()
                     }
                     .disabled(!isValidForm)
@@ -117,6 +119,10 @@ struct AddDebtView: View {
         
         debtStore.addDebt(debt)
         dismiss()
+    }
+    
+    private func localizedString(_ key: String) -> String {
+        localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
     }
 }
 
