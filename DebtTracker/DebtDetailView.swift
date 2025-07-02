@@ -1,4 +1,4 @@
-THIS SHOULD BE A LINTER ERRORimport SwiftUI
+import SwiftUI
 
 struct DebtDetailView: View {
     @EnvironmentObject var debtStore: DebtStore
@@ -353,4 +353,5 @@ struct DetailRow: View {
         ))
     }
     .environmentObject(DebtStore())
+    .environmentObject(UserSettings())
 }
