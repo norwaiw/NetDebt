@@ -94,4 +94,12 @@ class DebtStore: ObservableObject {
     var overdueDebts: [Debt] {
         debts.filter { $0.isOverdue }
     }
+    
+    var unpaidDebts: [Debt] {
+        debts.filter { !$0.isPaid }
+    }
+    
+    var paidDebts: [Debt] {
+        debts.filter { $0.isPaid }
+    }
 }
