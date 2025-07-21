@@ -1,153 +1,264 @@
 import SwiftUI
 
 struct AddDebtView: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var debtStore: DebtStore
-    @EnvironmentObject var userSettings: UserSettings
-    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    @ObservedObject var debtStore: DebtStore
+    @Environment(\.dismiss) var dismiss
     
-    @State private var title = ""
+    @State private var personName = ""
     @State private var amount = ""
-    @State private var creditor = ""
-    @State private var debtor = ""
-    @State private var isOwedToMe = true
-    @State private var hasDueDate = false
+    @State private var description = ""
+    @State private var isOwedToMe = false
+    @State private var currency = "RUB"
     @State private var dueDate = Date()
-    @State private var notes = ""
-    @State private var interestRate = ""
+    @State private var hasDueDate = false
+    @State private var hasReminder = false
+    @State private var reminderDate = Date()
     
-    @FocusState private var isAmountFocused: Bool
-    
-    private var isValidForm: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !amount.trimmingCharacters(in: .whitespaces).isEmpty &&
-        Double(amount) != nil &&
-        !creditor.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !debtor.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-    
-    private var amountWithInterest: Double? {
-        guard let principal = Double(amount),
-              let rate = Double(interestRate),
-              rate > 0 else {
-            return nil
-        }
-        return principal * (1 + rate / 100)
-    }
+    let currencies = ["RUB", "USD", "EUR", "GBP", "CNY"]
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(localizedString("debt_details")) {
-                    TextField(localizedString("title_field"), text: $title)
-                        .textInputAutocapitalization(.words)
-                    
-                    HStack {
-                        Text("$")
-                        TextField(localizedString("amount"), text: $amount)
-                            .keyboardType(.decimalPad)
-                            .focused($isAmountFocused)
-                    }
-                    
-                    Picker(localizedString("type"), selection: $isOwedToMe) {
-                        Text(localizedString("someone_owes_me")).tag(true)
-                        Text(localizedString("i_owe_someone")).tag(false)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                }
-                
-                Section(localizedString("people")) {
-                    if isOwedToMe {
-                        TextField(localizedString("who_owes_you"), text: $debtor)
-                            .textInputAutocapitalization(.words)
-                        TextField(localizedString("your_name"), text: $creditor)
-                            .textInputAutocapitalization(.words)
-                    } else {
-                        TextField(localizedString("who_do_you_owe"), text: $creditor)
-                            .textInputAutocapitalization(.words)
-                        TextField(localizedString("your_name"), text: $debtor)
-                            .textInputAutocapitalization(.words)
-                    }
-                }
-                
-                Section(localizedString("due_date")) {
-                    Toggle(localizedString("set_due_date"), isOn: $hasDueDate)
-                    
-                    if hasDueDate {
-                        DatePicker(localizedString("due_date"), selection: $dueDate, displayedComponents: .date)
-                            .datePickerStyle(GraphicalDatePickerStyle())
-                    }
-                }
-                
-                Section(localizedString("additional_details")) {
-                    HStack {
-                        Text(localizedString("interest_rate_percent"))
-                        Spacer()
-                        TextField("0.0", text: $interestRate)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 80)
-                    }
-                    
-                    if let totalAmount = amountWithInterest {
-                        HStack {
-                            Text(localizedString("amount_with_interest"))
-                            Spacer()
-                            Text("$\(totalAmount, specifier: "%.2f")")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    TextField(localizedString("notes_optional"), text: $notes, axis: .vertical)
-                        .lineLimit(3...6)
-                }
-            }
-            .navigationTitle(localizedString("add_debt"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localizedString("cancel")) {
+        ZStack {
+            BankingColors.background
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Navigation Bar
+                HStack {
+                    Button("Отмена") {
                         dismiss()
                     }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(localizedString("save")) {
+                    .foregroundColor(BankingColors.accent)
+                    
+                    Spacer()
+                    
+                    Text("Новый долг")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(BankingColors.primaryText)
+                    
+                    Spacer()
+                    
+                    Button("Сохранить") {
                         saveDebt()
                     }
-                    .disabled(!isValidForm)
+                    .foregroundColor(BankingColors.accent)
+                    .disabled(personName.isEmpty || amount.isEmpty)
+                }
+                .padding()
+                .background(BankingColors.background)
+                
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Debt Type Toggle
+                        VStack(spacing: 16) {
+                            Text("Тип долга")
+                                .font(.system(size: 14))
+                                .foregroundColor(BankingColors.secondaryText)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            HStack(spacing: 12) {
+                                DebtTypeButton(
+                                    title: "Я должен",
+                                    isSelected: !isOwedToMe,
+                                    action: { isOwedToMe = false }
+                                )
+                                
+                                DebtTypeButton(
+                                    title: "Мне должны",
+                                    isSelected: isOwedToMe,
+                                    action: { isOwedToMe = true }
+                                )
+                            }
+                        }
+                        .padding()
+                        .bankingCard()
+                        
+                        // Person Info
+                        VStack(spacing: 16) {
+                            BankingTextField(
+                                title: "Имя",
+                                text: $personName,
+                                placeholder: "Введите имя"
+                            )
+                            
+                            HStack(spacing: 16) {
+                                BankingTextField(
+                                    title: "Сумма",
+                                    text: $amount,
+                                    placeholder: "0",
+                                    keyboardType: .decimalPad
+                                )
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Валюта")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(BankingColors.secondaryText)
+                                    
+                                    Menu {
+                                        ForEach(currencies, id: \.self) { curr in
+                                            Button(curr) {
+                                                currency = curr
+                                            }
+                                        }
+                                    } label: {
+                                        HStack {
+                                            Text(currency)
+                                                .foregroundColor(BankingColors.primaryText)
+                                            Spacer()
+                                            Image(systemName: "chevron.down")
+                                                .font(.system(size: 12))
+                                                .foregroundColor(BankingColors.secondaryText)
+                                        }
+                                        .padding()
+                                        .background(BankingColors.tertiaryBackground)
+                                        .cornerRadius(12)
+                                    }
+                                }
+                                .frame(width: 100)
+                            }
+                            
+                            BankingTextField(
+                                title: "Описание",
+                                text: $description,
+                                placeholder: "Добавить описание (необязательно)"
+                            )
+                        }
+                        .padding()
+                        .bankingCard()
+                        
+                        // Due Date
+                        VStack(spacing: 0) {
+                            BankingToggleRow(
+                                title: "Срок возврата",
+                                isOn: $hasDueDate
+                            )
+                            
+                            if hasDueDate {
+                                DatePicker(
+                                    "",
+                                    selection: $dueDate,
+                                    displayedComponents: [.date]
+                                )
+                                .datePickerStyle(.graphical)
+                                .accentColor(BankingColors.accent)
+                                .padding()
+                            }
+                        }
+                        .bankingCard()
+                        
+                        // Reminder
+                        VStack(spacing: 0) {
+                            BankingToggleRow(
+                                title: "Напоминание",
+                                isOn: $hasReminder
+                            )
+                            
+                            if hasReminder {
+                                DatePicker(
+                                    "",
+                                    selection: $reminderDate,
+                                    displayedComponents: [.date, .hourAndMinute]
+                                )
+                                .datePickerStyle(.wheel)
+                                .padding()
+                            }
+                        }
+                        .bankingCard()
+                    }
+                    .padding()
                 }
             }
         }
     }
     
     private func saveDebt() {
-        guard let amountValue = Double(amount) else { return }
+        guard let amountDouble = Double(amount) else { return }
         
-        let debt = Debt(
-            title: title.trimmingCharacters(in: .whitespaces),
-            amount: amountValue,
-            creditor: creditor.trimmingCharacters(in: .whitespaces),
-            debtor: debtor.trimmingCharacters(in: .whitespaces),
-            dueDate: hasDueDate ? dueDate : nil,
+        let newDebt = Debt(
+            personName: personName,
+            amount: amountDouble,
+            currency: currency,
             isOwedToMe: isOwedToMe,
-            notes: notes.trimmingCharacters(in: .whitespaces),
-            interestRate: max(Double(interestRate) ?? 0.0, 0.0)
+            description: description.isEmpty ? nil : description,
+            dueDate: hasDueDate ? dueDate : nil,
+            reminderDate: hasReminder ? reminderDate : nil
         )
         
-        debtStore.addDebt(debt)
+        debtStore.addDebt(newDebt)
+        
+        if hasReminder {
+            NotificationManager.shared.scheduleNotification(for: newDebt)
+        }
+        
         dismiss()
-    }
-    
-    private func localizedString(_ key: String) -> String {
-        localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
     }
 }
 
-#if swift(>=5.9)
-#Preview {
-    AddDebtView()
-        .environmentObject(DebtStore())
-        .environmentObject(UserSettings())
+// MARK: - Supporting Views
+struct DebtTypeButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(isSelected ? .white : BankingColors.primaryText)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(isSelected ? BankingColors.accent : BankingColors.tertiaryBackground)
+                )
+        }
+    }
 }
-#endif
+
+struct BankingTextField: View {
+    let title: String
+    @Binding var text: String
+    let placeholder: String
+    var keyboardType: UIKeyboardType = .default
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 14))
+                .foregroundColor(BankingColors.secondaryText)
+            
+            TextField(placeholder, text: $text)
+                .font(.system(size: 16))
+                .foregroundColor(BankingColors.primaryText)
+                .padding()
+                .background(BankingColors.tertiaryBackground)
+                .cornerRadius(12)
+                .keyboardType(keyboardType)
+        }
+    }
+}
+
+struct BankingToggleRow: View {
+    let title: String
+    @Binding var isOn: Bool
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(BankingColors.primaryText)
+            
+            Spacer()
+            
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(BankingColors.accent)
+        }
+        .padding()
+    }
+}
+
+struct AddDebtView_Previews: PreviewProvider {
+    static var previews: some View {
+        AddDebtView(debtStore: DebtStore())
+    }
+}
