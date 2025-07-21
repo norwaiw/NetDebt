@@ -223,8 +223,10 @@ struct StatItem: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .environmentObject(DebtStore())
-        .environmentObject(UserSettings())
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+            .environmentObject(DebtStore())
+            .environmentObject(UserSettings())
+    }
 }

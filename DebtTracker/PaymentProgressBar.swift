@@ -71,14 +71,14 @@ struct PaymentProgressView: View {
     }
 }
 
-#if swift(>=5.9)
-#Preview {
-    VStack(spacing: 20) {
-        PaymentProgressBar(progress: 0.25)
-        PaymentProgressBar(progress: 0.5)
-        PaymentProgressBar(progress: 0.75)
-        PaymentProgressBar(progress: 1.0)
+struct PaymentProgressBar_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack(spacing: 20) {
+            PaymentProgressBar(progress: 0.25)
+            PaymentProgressBar(progress: 0.5)
+            PaymentProgressBar(progress: 0.75)
+            PaymentProgressBar(progress: 1.0)
+        }
+        .padding()
     }
-    .padding()
 }
-#endif
