@@ -10,26 +10,9 @@ struct ContentView: View {
     }
     
     var body: some View {
-        TabView {
-            DebtListView(debtStore: debtStore)
-                .tabItem {
-                    Image(systemName: "list.bullet")
-                    Text(localizedString("debts"))
-                }
-            
-            StatisticsView()
-                .tabItem {
-                    Image(systemName: "chart.bar")
-                    Text(localizedString("statistics"))
-                }
-            
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text(localizedString("settings"))
-                }
-        }
-        .accentColor(.blue)
+        BankingMainView()
+            .environmentObject(debtStore)
+            .environmentObject(userSettings)
     }
 }
 
