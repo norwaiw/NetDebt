@@ -14,12 +14,12 @@ struct PaymentProgressBar: View {
             ZStack(alignment: .leading) {
                 // Background
                 RoundedRectangle(cornerRadius: height / 2)
-                    .fill(Color.gray.opacity(0.2))
+                    .fill(BankingColors.tertiaryBackground)
                     .frame(height: height)
                 
                 // Progress
                 RoundedRectangle(cornerRadius: height / 2)
-                    .fill(progressColor)
+                    .fill(progressGradient)
                     .frame(width: geometry.size.width * progress, height: height)
                     .animation(.easeInOut(duration: 0.3), value: progress)
             }
@@ -27,15 +27,24 @@ struct PaymentProgressBar: View {
         .frame(height: height)
     }
     
+    private var progressGradient: LinearGradient {
+        let color = progressColor
+        return LinearGradient(
+            gradient: Gradient(colors: [color, color.opacity(0.8)]),
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+    
     private var progressColor: Color {
         if progress >= 1.0 {
-            return .green
+            return BankingColors.success
         } else if progress >= 0.75 {
-            return .blue
+            return Color(hex: "007AFF") // iOS blue
         } else if progress >= 0.5 {
-            return .orange
+            return BankingColors.warning
         } else {
-            return .red
+            return BankingColors.accent
         }
     }
 }
@@ -54,34 +63,42 @@ struct PaymentProgressView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("\(Int(debt.paymentProgress * 100))%")
-                    .font(.caption)
-                    .fontWeight(.medium)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(BankingColors.primaryText)
                 
                 Spacer()
                 
                 if !userSettings.hideTotalAmount {
                     Text("\(totalPaidFormatted) / \(debt.formattedAmount)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(.system(size: 12))
+                        .foregroundColor(BankingColors.secondaryText)
                 }
             }
             
             PaymentProgressBar(progress: debt.paymentProgress)
         }
+        .padding(12)
+        .background(BankingColors.secondaryBackground)
+        .cornerRadius(12)
     }
 }
 
 struct PaymentProgressBar_Previews: PreviewProvider {
     static var previews: some View {
-        VStack(spacing: 20) {
-            PaymentProgressBar(progress: 0.25)
-            PaymentProgressBar(progress: 0.5)
-            PaymentProgressBar(progress: 0.75)
-            PaymentProgressBar(progress: 1.0)
+        ZStack {
+            BankingColors.background
+                .ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                PaymentProgressBar(progress: 0.25)
+                PaymentProgressBar(progress: 0.5)
+                PaymentProgressBar(progress: 0.75)
+                PaymentProgressBar(progress: 1.0)
+            }
+            .padding()
         }
-        .padding()
     }
 }

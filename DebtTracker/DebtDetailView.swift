@@ -54,8 +54,7 @@ struct DebtDetailView: View {
             }
         }
         .sheet(isPresented: $showingEditSheet) {
-            // EditDebtView would go here
-            Text("Edit Debt View")
+            EditDebtView(debt: .constant(debt), debtStore: debtStore)
         }
         .sheet(isPresented: $showingAddPayment) {
             addPaymentSheet

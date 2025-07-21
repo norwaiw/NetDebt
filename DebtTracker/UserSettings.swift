@@ -3,8 +3,10 @@ import SwiftUI
 @MainActor
 final class UserSettings: ObservableObject {
     @Published var selectedTheme: AppTheme = .system
-    @Published var selectedLanguage: AppLanguage = .english
+    @Published var selectedLanguage: Language = .english
     @Published var hideTotalAmount: Bool = false
+    @Published var defaultCurrency: String = "RUB"
+    @Published var notificationsEnabled: Bool = true
     
     enum AppTheme: String, CaseIterable {
         case light = "light"
@@ -22,7 +24,7 @@ final class UserSettings: ObservableObject {
             }
         }
         
-        func localizedName(for language: AppLanguage) -> String {
+        func localizedName(for language: Language) -> String {
             switch self {
             case .light:
                 switch language {
@@ -46,26 +48,26 @@ final class UserSettings: ObservableObject {
         }
     }
     
-    enum AppLanguage: String, CaseIterable {
+    enum Language: String, CaseIterable {
         case english = "en"
         case russian = "ru"
         case chinese = "zh-Hans"
         
-        var localizedName: String {
+        var displayName: String {
             switch self {
-            case .english:
-                return "English"
-            case .russian:
-                return "Русский"
-            case .chinese:
-                return "中文"
+            case .english: return "English"
+            case .russian: return "Русский"
+            case .chinese: return "中文"
             }
         }
         
-        var locale: Locale {
-            return Locale(identifier: rawValue)
+        var localizedName: String {
+            return displayName
         }
     }
+    
+    // Compatibility alias
+    typealias AppLanguage = Language
     
     private let themeKey = "selectedTheme"
     private let languageKey = "selectedLanguage"
@@ -82,7 +84,7 @@ final class UserSettings: ObservableObject {
         }
         
         if let languageString = UserDefaults.standard.string(forKey: languageKey),
-           let language = AppLanguage(rawValue: languageString) {
+           let language = Language(rawValue: languageString) {
             selectedLanguage = language
         }
         
@@ -103,7 +105,7 @@ final class UserSettings: ObservableObject {
         saveSettings()
     }
     
-    func updateLanguage(_ language: AppLanguage) {
+    func updateLanguage(_ language: Language) {
         selectedLanguage = language
         saveSettings()
     }
