@@ -54,7 +54,13 @@ struct PaymentProgressView: View {
                 Spacer()
                 
                 if !userSettings.hideTotalAmount {
-                    Text("\(debt.totalPaid.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD"))) / \(debt.formattedAmount)")
+                    let totalPaid = debt.partialPayments.reduce(0) { $0 + $1.amount }
+                    let formatter = NumberFormatter()
+                    formatter.numberStyle = .currency
+                    formatter.currencyCode = debt.currency
+                    formatter.maximumFractionDigits = 0
+                    let totalPaidFormatted = formatter.string(from: NSNumber(value: totalPaid)) ?? "\(Int(totalPaid)) \(debt.currencySymbol)"
+                    Text("\(totalPaidFormatted) / \(debt.formattedAmount)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

@@ -178,12 +178,14 @@ struct OverdueDebtRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(debt.title)
+                Text(debt.personName)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                Text(debt.isOwedToMe ? debt.debtor : debt.creditor)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                if let description = debt.description {
+                    Text(description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             
             Spacer()

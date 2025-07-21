@@ -41,7 +41,7 @@ final class NotificationManager {
         // Basic body text. In a production app you might localise this string.
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        content.body = "\(debt.title) is due on \(formatter.string(from: dueDate))."
+        content.body = "\(debt.personName) - \(debt.description ?? "Debt") is due on \(formatter.string(from: dueDate))."
         content.sound = .default
         // Store the debt id so the app can react when the notification is tapped.
         content.userInfo = ["debtId": debt.id.uuidString]
