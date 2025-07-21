@@ -97,7 +97,7 @@ struct DebtListView: View {
                     if totalOwedToMe > 0 || totalIOwe > 0 {
                         HStack(spacing: 12) {
                             if totalOwedToMe > 0 {
-                                SummaryCard(
+                                DebtSummaryCard(
                                     title: "Мне должны",
                                     amount: totalOwedToMe,
                                     color: BankingColors.success
@@ -105,7 +105,7 @@ struct DebtListView: View {
                             }
                             
                             if totalIOwe > 0 {
-                                SummaryCard(
+                                DebtSummaryCard(
                                     title: "Я должен",
                                     amount: totalIOwe,
                                     color: BankingColors.accent
@@ -168,7 +168,7 @@ struct FilterChip: View {
     }
 }
 
-struct SummaryCard: View {
+struct DebtSummaryCard: View {
     let title: String
     let amount: Double
     let color: Color
