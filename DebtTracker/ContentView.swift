@@ -221,10 +221,8 @@ struct StatItem: View {
     }
 }
 
-#if swift(>=5.9)
 #Preview {
     ContentView()
         .environmentObject(DebtStore())
         .environmentObject(UserSettings())
 }
-#endif
