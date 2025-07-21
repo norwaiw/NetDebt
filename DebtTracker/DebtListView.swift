@@ -141,14 +141,15 @@ struct DebtListView: View {
                                 DebtRowView(debt: debt)
                             }
                             .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                if !debt.isPaid {
-                                    Button {
-                                        debtStore.markAsPaid(debt)
-                                    } label: {
-                                        Label(localizedString("mark_as_paid"), systemImage: "checkmark.circle")
-                                    }
-                                    .tint(.green)
+                                Button {
+                                    debtStore.togglePaidStatus(debt)
+                                } label: {
+                                    Label(
+                                        debt.isPaid ? localizedString("mark_as_unpaid") : localizedString("mark_as_paid"),
+                                        systemImage: debt.isPaid ? "arrow.uturn.backward.circle" : "checkmark.circle"
+                                    )
                                 }
+                                .tint(debt.isPaid ? .orange : .green)
                             }
                         }
                         .onDelete(perform: deleteDebts)
@@ -255,19 +256,21 @@ struct DebtRowView: View {
                     }
                     
                     HStack {
-                        if debt.isPaid {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text(localizedString("paid"))
-                                .font(.caption)
-                                .foregroundColor(.green)
-                        } else {
-                            Button(action: { debtStore.markAsPaid(debt) }) {
+                        Button(action: { debtStore.togglePaidStatus(debt) }) {
+                            if debt.isPaid {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                    Text(localizedString("paid"))
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                }
+                            } else {
                                 Image(systemName: "circle")
                                     .foregroundColor(.blue)
                             }
-                            .buttonStyle(BorderlessButtonStyle())
                         }
+                        .buttonStyle(BorderlessButtonStyle())
                     }
                 }
             }
