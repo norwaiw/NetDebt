@@ -11,7 +11,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            DebtListView()
+            DebtListView(debtStore: debtStore)
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text(localizedString("debts"))
