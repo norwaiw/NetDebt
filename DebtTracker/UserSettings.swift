@@ -1,5 +1,4 @@
 import SwiftUI
-import Foundation
 
 @MainActor
 final class UserSettings: ObservableObject {
