@@ -7,10 +7,10 @@ struct DebtTrackerApp: App {
     
     var body: some Scene {
         WindowGroup {
-            BankingMainView()
+             ContentView()
                 .environmentObject(debtStore)
                 .environmentObject(userSettings)
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(userSettings.selectedTheme.colorScheme)
         }
     }
 }
