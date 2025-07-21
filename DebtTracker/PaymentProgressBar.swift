@@ -44,6 +44,15 @@ struct PaymentProgressView: View {
     let debt: Debt
     @EnvironmentObject var userSettings: UserSettings
     
+    private var totalPaidFormatted: String {
+        let totalPaid = debt.partialPayments.reduce(0) { $0 + $1.amount }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = debt.currency
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: totalPaid)) ?? "\(Int(totalPaid)) \(debt.currencySymbol)"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -54,12 +63,6 @@ struct PaymentProgressView: View {
                 Spacer()
                 
                 if !userSettings.hideTotalAmount {
-                    let totalPaid = debt.partialPayments.reduce(0) { $0 + $1.amount }
-                    let formatter = NumberFormatter()
-                    formatter.numberStyle = .currency
-                    formatter.currencyCode = debt.currency
-                    formatter.maximumFractionDigits = 0
-                    let totalPaidFormatted = formatter.string(from: NSNumber(value: totalPaid)) ?? "\(Int(totalPaid)) \(debt.currencySymbol)"
                     Text("\(totalPaidFormatted) / \(debt.formattedAmount)")
                         .font(.caption)
                         .foregroundColor(.secondary)
