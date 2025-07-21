@@ -114,9 +114,9 @@ struct SettingsView: View {
     }
 }
 
-#if swift(>=5.9)
-#Preview {
-    SettingsView()
-        .environmentObject(UserSettings())
+struct SettingsView_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsView()
+            .environmentObject(UserSettings())
+    }
 }
-#endif
