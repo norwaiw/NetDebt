@@ -39,6 +39,21 @@ class DebtStore: ObservableObject {
         }
     }
     
+    func togglePaidStatus(_ debt: Debt) {
+        if let index = debts.firstIndex(where: { $0.id == debt.id }) {
+            debts[index].isPaid.toggle()
+            saveDebts()
+            
+            if debts[index].isPaid {
+                // Если долг отмечен как оплаченный, отменяем уведомления
+                NotificationManager.shared.cancelNotification(for: debts[index])
+            } else {
+                // Если долг снова активен, планируем уведомления заново
+                NotificationManager.shared.scheduleNotification(for: debts[index])
+            }
+        }
+    }
+    
     // New methods for partial payments
     func addPartialPayment(to debt: Debt, amount: Double, note: String = "") {
         if let index = debts.firstIndex(where: { $0.id == debt.id }) {

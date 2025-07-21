@@ -252,18 +252,16 @@ struct DebtDetailView: View {
                 
                 // Action Buttons
                 VStack(spacing: 12) {
-                    if !debt.isPaid {
-                        Button(action: { debtStore.markAsPaid(debt) }) {
-                            HStack {
-                                Image(systemName: "checkmark.circle")
-                                Text(localizedString("mark_as_paid"))
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                    Button(action: { debtStore.togglePaidStatus(debt) }) {
+                        HStack {
+                            Image(systemName: debt.isPaid ? "arrow.uturn.backward.circle" : "checkmark.circle")
+                            Text(debt.isPaid ? localizedString("mark_as_unpaid") : localizedString("mark_as_paid"))
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(debt.isPaid ? Color.orange : Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
                     
                     Button(action: { showingDeleteAlert = true }) {
