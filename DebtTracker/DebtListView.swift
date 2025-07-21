@@ -1,338 +1,282 @@
 import SwiftUI
 
 struct DebtListView: View {
-    @EnvironmentObject var debtStore: DebtStore
-    @EnvironmentObject var userSettings: UserSettings
-    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    @ObservedObject var debtStore: DebtStore
     @State private var showingAddDebt = false
-    @State private var filterOption: FilterOption = .all
-    @State private var sortOption: SortOption = .dateCreated
     @State private var searchText = ""
+    @State private var selectedFilter: DebtFilter = .all
     
-    private func localizedString(_ key: String) -> String {
-        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
-    }
-    
-    enum FilterOption: String, CaseIterable {
-        case all = "all"
-        case owedToMe = "owed_to_me_filter"
-        case iOwe = "i_owe_filter"
-        case unpaid = "unpaid_filter"
-        case paid = "paid_filter"
-        case overdue = "overdue_filter"
+    enum DebtFilter: String, CaseIterable {
+        case all = "Все"
+        case owedToMe = "Мне должны"
+        case iOwe = "Я должен"
         
-        func localizedName(for language: UserSettings.AppLanguage) -> String {
-            return LocalizationHelper.shared.localizedString(self.rawValue, language: language)
+        var icon: String {
+            switch self {
+            case .all: return "list.bullet"
+            case .owedToMe: return "arrow.down.circle"
+            case .iOwe: return "arrow.up.circle"
+            }
         }
     }
     
-    enum SortOption: String, CaseIterable {
-        case dateCreated = "date_created"
-        case amount = "amount"
-        case dueDate = "due_date"
-        case title = "title"
-        
-        func localizedName(for language: UserSettings.AppLanguage) -> String {
-            return LocalizationHelper.shared.localizedString(self.rawValue, language: language)
-        }
-    }
-    
-    private var filteredAndSortedDebts: [Debt] {
-        var debts = debtStore.debts
-        
-        // Apply search filter
-        if !searchText.isEmpty {
-            debts = debts.filter { debt in
-                debt.title.localizedCaseInsensitiveContains(searchText) ||
-                debt.creditor.localizedCaseInsensitiveContains(searchText) ||
-                debt.debtor.localizedCaseInsensitiveContains(searchText)
+    var filteredDebts: [Debt] {
+        let filtered = debtStore.debts.filter { debt in
+            switch selectedFilter {
+            case .all:
+                return true
+            case .owedToMe:
+                return debt.isOwedToMe
+            case .iOwe:
+                return !debt.isOwedToMe
             }
         }
         
-        // Apply category filter
-        switch filterOption {
-        case .all:
-            break
-        case .owedToMe:
-            debts = debts.filter { $0.isOwedToMe }
-        case .iOwe:
-            debts = debts.filter { !$0.isOwedToMe }
-        case .unpaid:
-            debts = debts.filter { !$0.isPaid }
-        case .paid:
-            debts = debts.filter { $0.isPaid }
-        case .overdue:
-            debts = debts.filter { $0.isOverdue }
-        }
-        
-        // Apply sorting
-        switch sortOption {
-        case .dateCreated:
-            debts.sort { $0.dateCreated > $1.dateCreated }
-        case .amount:
-            debts.sort { $0.amount > $1.amount }
-        case .dueDate:
-            debts.sort { (debt1, debt2) in
-                guard let date1 = debt1.dueDate, let date2 = debt2.dueDate else {
-                    return debt1.dueDate != nil
-                }
-                return date1 < date2
+        if searchText.isEmpty {
+            return filtered
+        } else {
+            return filtered.filter { debt in
+                debt.personName.localizedCaseInsensitiveContains(searchText) ||
+                (debt.description ?? "").localizedCaseInsensitiveContains(searchText)
             }
-        case .title:
-            debts.sort { $0.title < $1.title }
         }
-        
-        return debts
+    }
+    
+    var totalOwedToMe: Double {
+        debtStore.debts.filter { $0.isOwedToMe }.reduce(0) { $0 + $1.remainingAmount }
+    }
+    
+    var totalIOwe: Double {
+        debtStore.debts.filter { !$0.isOwedToMe }.reduce(0) { $0 + $1.remainingAmount }
     }
     
     var body: some View {
-        NavigationView {
+        ZStack {
+            BankingColors.background
+                .ignoresSafeArea()
+            
             VStack(spacing: 0) {
-                // Filter and Sort Controls
-                VStack(spacing: 12) {
+                // Header
+                VStack(spacing: 16) {
                     HStack {
-                        Menu {
-                            ForEach(FilterOption.allCases, id: \.self) { option in
-                                Button(option.localizedName(for: userSettings.selectedLanguage)) {
-                                    filterOption = option
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text("\(localizedString("filter")): \(filterOption.localizedName(for: userSettings.selectedLanguage))")
-                                Image(systemName: "chevron.down")
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(8)
-                        }
+                        Text("История долгов")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(BankingColors.primaryText)
                         
                         Spacer()
                         
-                        Menu {
-                            ForEach(SortOption.allCases, id: \.self) { option in
-                                Button(option.localizedName(for: userSettings.selectedLanguage)) {
-                                    sortOption = option
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text("\(localizedString("sort")): \(sortOption.localizedName(for: userSettings.selectedLanguage))")
-                                Image(systemName: "chevron.down")
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(8)
+                        Button(action: { showingAddDebt = true }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 28))
+                                .foregroundColor(BankingColors.accent)
                         }
                     }
+                    .padding(.horizontal)
+                    .padding(.top, 16)
+                    
+                    // Search Bar
+                    BankingSearchBar(searchText: $searchText, placeholder: "Поиск долгов")
+                        .padding(.horizontal)
+                    
+                    // Filter Tabs
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(DebtFilter.allCases, id: \.self) { filter in
+                                FilterChip(
+                                    title: filter.rawValue,
+                                    icon: filter.icon,
+                                    isSelected: selectedFilter == filter,
+                                    action: { selectedFilter = filter }
+                                )
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    // Summary Cards
+                    if totalOwedToMe > 0 || totalIOwe > 0 {
+                        HStack(spacing: 12) {
+                            if totalOwedToMe > 0 {
+                                SummaryCard(
+                                    title: "Мне должны",
+                                    amount: totalOwedToMe,
+                                    color: BankingColors.success
+                                )
+                            }
+                            
+                            if totalIOwe > 0 {
+                                SummaryCard(
+                                    title: "Я должен",
+                                    amount: totalIOwe,
+                                    color: BankingColors.accent
+                                )
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
+                .padding(.bottom, 16)
                 
                 // Debt List
-                if filteredAndSortedDebts.isEmpty {
-                    EmptyStateView(filterOption: filterOption)
+                if filteredDebts.isEmpty {
+                    EmptyStateView(filter: selectedFilter)
                 } else {
-                    List {
-                        ForEach(filteredAndSortedDebts) { debt in
-                            NavigationLink(destination: DebtDetailView(debt: debt)) {
-                                DebtRowView(debt: debt)
-                            }
-                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button {
-                                    debtStore.togglePaidStatus(debt)
-                                } label: {
-                                    Label(
-                                        debt.isPaid ? localizedString("mark_as_unpaid") : localizedString("mark_as_paid"),
-                                        systemImage: debt.isPaid ? "arrow.uturn.backward.circle" : "checkmark.circle"
-                                    )
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(filteredDebts) { debt in
+                                NavigationLink(destination: DebtDetailView(debt: debt, debtStore: debtStore)) {
+                                    DebtRowCard(debt: debt)
                                 }
-                                .tint(debt.isPaid ? .orange : .green)
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .onDelete(perform: deleteDebts)
-                    }
-                    .listStyle(PlainListStyle())
-                }
-            }
-            .navigationTitle(localizedString("debt_tracker"))
-            .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText, prompt: localizedString("search_debts"))
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    // Toggle hide/show amounts button
-                    Button(action: {
-                        userSettings.updateHideTotalAmount(!userSettings.hideTotalAmount)
-                    }) {
-                        Image(systemName: userSettings.hideTotalAmount ? "eye" : "eye.slash")
-                    }
-
-                    // Existing add button
-                    Button(action: { showingAddDebt = true }) {
-                        Image(systemName: "plus")
+                        .padding(.horizontal)
+                        .padding(.bottom, 100)
                     }
                 }
-            }
-            .sheet(isPresented: $showingAddDebt) {
-                AddDebtView()
             }
         }
-    }
-    
-    private func deleteDebts(offsets: IndexSet) {
-        for index in offsets {
-            debtStore.deleteDebt(filteredAndSortedDebts[index])
+        .sheet(isPresented: $showingAddDebt) {
+            AddDebtView(debtStore: debtStore)
         }
     }
 }
 
-struct DebtRowView: View {
-    let debt: Debt
-    @EnvironmentObject var debtStore: DebtStore
-    @EnvironmentObject var userSettings: UserSettings
-    @ObservedObject private var localizationHelper = LocalizationHelper.shared
-    
-    private func localizedString(_ key: String) -> String {
-        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
-    }
+// MARK: - Supporting Views
+struct FilterChip: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
     
     var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(debt.title)
-                            .font(.headline)
-                            .foregroundColor(debt.isPaid ? .secondary : .primary)
-                        
-                        // Urgency indicator
-                        if debt.dueDate != nil && !debt.isPaid {
-                            Image(systemName: debt.urgencyLevel.systemImageName)
-                                .font(.caption)
-                                .foregroundColor(debt.urgencyLevel.color)
-                        }
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+            }
+            .foregroundColor(isSelected ? .white : BankingColors.primaryText)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(isSelected ? BankingColors.accent : BankingColors.tertiaryBackground)
+            )
+        }
+    }
+}
+
+struct SummaryCard: View {
+    let title: String
+    let amount: Double
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 14))
+                .foregroundColor(BankingColors.secondaryText)
+            
+            Text("\(Int(amount)) ₽")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(color)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(color.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
+struct DebtRowCard: View {
+    let debt: Debt
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon
+            ZStack {
+                Circle()
+                    .fill(debt.isOwedToMe ? BankingColors.success.opacity(0.2) : BankingColors.accent.opacity(0.2))
+                    .frame(width: 48, height: 48)
+                
+                Image(systemName: debt.isOwedToMe ? "arrow.down.circle.fill" : "arrow.up.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundColor(debt.isOwedToMe ? BankingColors.success : BankingColors.accent)
+            }
+            
+            // Info
+            VStack(alignment: .leading, spacing: 4) {
+                Text(debt.personName)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(BankingColors.primaryText)
+                
+                HStack(spacing: 8) {
+                    if let description = debt.description {
+                        Text(description)
+                            .font(.system(size: 14))
+                            .foregroundColor(BankingColors.secondaryText)
+                            .lineLimit(1)
                     }
-                    
-                    Text(debt.isOwedToMe ? "\(localizedString("from")): \(debt.debtor)" : "\(localizedString("to")): \(debt.creditor)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
                     
                     if let dueDate = debt.dueDate {
-                        HStack {
-                            Image(systemName: "calendar")
-                                .font(.caption)
-                            Text(dueDate, style: .date)
-                                .font(.caption)
-                            
-                            if let remainingDays = debt.remainingDays {
-                                Text("(\(remainingDays) \(localizedString("days")))")
-                                    .font(.caption)
-                                    .foregroundColor(debt.urgencyLevel.color)
-                            }
-                            
-                            if debt.isOverdue {
-                                Text(localizedString("overdue"))
-                                    .font(.caption)
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .foregroundColor(.secondary)
-                    }
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(userSettings.hideTotalAmount ? "••••" : debt.formattedAmount)
-                        .font(.headline)
-                        .foregroundColor(debt.isPaid ? .secondary : (debt.isOwedToMe ? .green : .red))
-                    
-                    if debt.partialPayments.count > 0 && !debt.isPaid {
-                        Text(localizedString("remaining") + ": " + (userSettings.hideTotalAmount ? "••••" : debt.formattedRemainingAmount))
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Button(action: { debtStore.togglePaidStatus(debt) }) {
-                            if debt.isPaid {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                    Text(localizedString("paid"))
-                                        .font(.caption)
-                                        .foregroundColor(.green)
-                                }
-                            } else {
-                                Image(systemName: "circle")
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
+                        Text("• \(dueDate.formatted(date: .abbreviated, time: .omitted))")
+                            .font(.system(size: 12))
+                            .foregroundColor(debt.isOverdue ? BankingColors.accent : BankingColors.secondaryText)
                     }
                 }
             }
             
-            // Payment progress bar
-            if debt.partialPayments.count > 0 && !debt.isPaid {
-                PaymentProgressView(debt: debt)
-                    .padding(.top, 4)
+            Spacer()
+            
+            // Amount
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(debt.isOwedToMe ? "+" : "-")\(Int(debt.remainingAmount))")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(debt.isOwedToMe ? BankingColors.success : BankingColors.primaryText)
+                
+                Text(debt.currency)
+                    .font(.system(size: 12))
+                    .foregroundColor(BankingColors.secondaryText)
             }
         }
-        .padding(.vertical, 4)
-        .opacity(debt.isPaid ? 0.6 : 1.0)
+        .padding()
+        .bankingCard()
     }
 }
 
 struct EmptyStateView: View {
-    let filterOption: DebtListView.FilterOption
-    @EnvironmentObject var userSettings: UserSettings
-    @ObservedObject private var localizationHelper = LocalizationHelper.shared
+    let filter: DebtListView.DebtFilter
     
-    private func localizedString(_ key: String) -> String {
-        return localizationHelper.localizedString(key, language: userSettings.selectedLanguage)
+    var message: String {
+        switch filter {
+        case .all:
+            return "У вас пока нет долгов"
+        case .owedToMe:
+            return "Вам никто не должен"
+        case .iOwe:
+            return "Вы никому не должны"
+        }
     }
     
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "doc.text")
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 64))
+                .foregroundColor(BankingColors.success)
             
-            Text(emptyMessage)
-                .font(.headline)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+            Text(message)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundColor(BankingColors.secondaryText)
         }
-        .padding(.horizontal, 40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-    }
-    
-    private var emptyMessage: String {
-        switch filterOption {
-        case .all:
-            return localizedString("no_debts_found")
-        case .owedToMe:
-            return localizedString("no_one_owes_you")
-        case .iOwe:
-            return localizedString("you_dont_owe")
-        case .unpaid:
-            return localizedString("no_unpaid_debts")
-        case .paid:
-            return localizedString("no_paid_debts")
-        case .overdue:
-            return localizedString("no_overdue_debts")
-        }
+        .padding()
     }
 }
 
-#if swift(>=5.9)
-#Preview {
-    DebtListView()
-        .environmentObject(DebtStore())
-        .environmentObject(UserSettings())
+struct DebtListView_Previews: PreviewProvider {
+    static var previews: some View {
+        DebtListView(debtStore: DebtStore())
+    }
 }
-#endif

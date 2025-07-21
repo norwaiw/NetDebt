@@ -7,13 +7,10 @@ struct DebtTrackerApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            BankingMainView()
                 .environmentObject(debtStore)
                 .environmentObject(userSettings)
-                .preferredColorScheme(userSettings.selectedTheme.colorScheme)
-                .onAppear {
-                    NotificationManager.shared.requestAuthorization()
-                }
+                .preferredColorScheme(.dark)
         }
     }
 }
