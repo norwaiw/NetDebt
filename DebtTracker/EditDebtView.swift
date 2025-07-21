@@ -164,17 +164,28 @@ struct EditDebtView: View {
     private func saveChanges() {
         guard let amountDouble = Double(amount) else { return }
         
-        debt.personName = personName
-        debt.amount = amountDouble
-        debt.currency = currency
-        debt.description = description.isEmpty ? nil : description
-        debt.dueDate = hasDueDate ? dueDate : nil
-        debt.reminderDate = hasReminder ? reminderDate : nil
+        // Create a new Debt instance with updated values
+        let updatedDebt = Debt(
+            id: debt.id,
+            personName: personName,
+            amount: amountDouble,
+            currency: currency,
+            isOwedToMe: debt.isOwedToMe,
+            description: description.isEmpty ? nil : description,
+            dateCreated: debt.dateCreated,
+            dueDate: hasDueDate ? dueDate : nil,
+            reminderDate: hasReminder ? reminderDate : nil,
+            isPaid: debt.isPaid,
+            partialPayments: debt.partialPayments
+        )
         
-        debtStore.updateDebt(debt)
+        // Update the binding
+        debt = updatedDebt
+        
+        debtStore.updateDebt(updatedDebt)
         
         if hasReminder {
-            NotificationManager.shared.scheduleNotification(for: debt)
+            NotificationManager.shared.scheduleNotification(for: updatedDebt)
         }
         
         dismiss()
