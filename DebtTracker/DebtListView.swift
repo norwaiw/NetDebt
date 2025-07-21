@@ -75,8 +75,8 @@ struct DebtListView: View {
                     .padding(.top, 16)
                     
                     // Search Bar
-                    BankingSearchBar(searchText: $searchText, placeholder: "Поиск долгов")
-                        .padding(.horizontal)
+//                    BankingSearchBar(searchText: $searchText, placeholder: "Поиск долгов")
+//                        .padding(.horizontal)
                     
                     // Filter Tabs
                     ScrollView(.horizontal, showsIndicators: false) {
